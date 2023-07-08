@@ -4,6 +4,7 @@ interface User{
     name: string,
     email: string,
     password: string,
+    verified?: boolean,
     stores?: Array<string>,
     avatar?: string,
     createdAt?: string,
@@ -22,6 +23,9 @@ const userSchema = new mongoose.Schema<User>({
     password: {
         type: String,
         required: [true, "Password is required"]
+    },
+    verified:{
+        type: Boolean
     },
     stores: [
         {
