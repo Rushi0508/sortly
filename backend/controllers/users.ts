@@ -14,11 +14,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         let user = await User.findOne({ email: email });
         if (user) {
             if (user.verified) {
-                return res.json({ message: "Email already exists" });
+                throw new Error("Email already registered");
             }
-            // else{
-            //     await User.findByIdAndUpdate({id: user._id}, {lastOTP: generateOTP()});
-            // }
         }
 
         const salt = 10;
@@ -35,11 +32,11 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
                 sendVerificationMail(result, res);
             })
             .catch((error) => {
-                res.json({ message: "User Verification Failed. Try Again" })
+                throw new Error("User Verification failed. Try again");
             })
     }
     catch (errors: any) {
-        res.json({ errors: errors.message, created: false })
+        res.json({ errors: errors.message, status: false })
     }
 }
 
@@ -69,14 +66,43 @@ export const verifyOTP = async(req: Request, res: Response)=>{
                         }else{
                             await User.updateOne({_id: userId}, {verified: true});
                             await UserVerification.deleteMany({userId});
-                            res.json({status: "Verfied", message: "User Successfully Verified"});
+                            res.json({status: true, message: "User Successfully Verified"});
                         }
                     }
                 }
             }
         }
     }catch(error: any){
-        res.json({status: "Failed", errors: error.message})
+        res.json({status: false, errors: error.message})
+    }
+}
+
+export const login = async(req: Request, res: Response, next: NextFunction)=>{
+    try{
+        const {email, password} = req.body;
+        if(!email || !password){
+            throw new Error("Details cannot be blank");
+        }
+
+        let user = await User.findOne({email: email});
+        if(!user){
+            throw new Error("Invalid Credentials");
+        }
+        const validPass = await bcrypt.compare(password, user.password);
+        if(!validPass){
+            throw new Error("Invalid Credentials");
+        }
+
+        // JWT AUTH
+        const data = {
+            user:{
+                id: user.id
+            }
+        }
+        const userAuthToken = jwt.sign(data,process.env.JWT_SECRET!);
+        res.json({data: user,userAuthToken: userAuthToken,status: true});
+    }catch(error: any){
+        res.json({status: false, errors: error.message})
     }
 }
 
@@ -137,6 +163,6 @@ const sendVerificationMail = async (result: any, res: any) => {
                 }
             })
         } catch (errors: any) {
-            res.json({ status: "Failed", message: errors.message });
+            res.json({ status: false, message: errors.message });
         };
 }
