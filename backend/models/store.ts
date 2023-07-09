@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import Item from "./item";
+import Entry from "./entry";
 
 
 interface Store{
@@ -7,8 +9,8 @@ interface Store{
     email: string,
     address: string,
     phone: BigInt,
-    items?: Array<string>,
-    entries?: Array<string>,
+    items?: Array<Item>,
+    entries?: Array<Entry>,
     createdAt?: string
 }
 
