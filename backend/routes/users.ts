@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.route('/api/register')
     .post(register);
-router.route('/api/register/verifyOTP')
+router.route('/api/verifyOTP')
     .post(verifyOTP)
 router.route('/api/login')
     .post(login);

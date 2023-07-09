@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
+import Store from "./store";
 
 interface User{
     name: string,
     email: string,
     password: string,
     verified?: boolean,
-    stores?: Array<string>,
+    stores?: Array<Store>,
+    plan?: string,
+    planCreatedAt?: string,
+    planExpiresAt?: string,
     avatar?: string,
     createdAt?: string,
     updatedAt?: string
@@ -33,6 +37,18 @@ const userSchema = new mongoose.Schema<User>({
             ref: "Store"
         }
     ],
+    plan: {
+        type: String,
+        enum: ['FREE', 'SUPER', 'PREMIUM'],
+        default: 'FREE'
+    },
+    planCreatedAt: {
+        type: Date,
+        default: Date.now()
+    },
+    planExpiresAt: {
+        type: Date,
+    },
     createdAt: {
         type: Date,
         default: Date.now()
