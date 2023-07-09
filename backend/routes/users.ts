@@ -1,11 +1,12 @@
 import express from 'express'
-import { register, verifyOTP } from '../controllers/users';
+import { login, register, verifyOTP } from '../controllers/users';
 
 const router = express.Router();
 
 router.route('/api/register')
     .post(register);
-router.route('/api/register/verifyOTP')
+router.route('/api/verifyOTP')
     .post(verifyOTP)
-
+router.route('/api/login')
+    .post(login);
 export default router;

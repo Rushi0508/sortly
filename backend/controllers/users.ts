@@ -14,11 +14,8 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         let user = await User.findOne({ email: email });
         if (user) {
             if (user.verified) {
-                return res.json({ message: "Email already exists" });
+                throw new Error("Email already registered");
             }
-            // else{
-            //     await User.findByIdAndUpdate({id: user._id}, {lastOTP: generateOTP()});
-            // }
         }
 
         const salt = 10;
@@ -35,11 +32,11 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
                 sendVerificationMail(result, res);
             })
             .catch((error) => {
-                res.json({ message: "User Verification Failed. Try Again" })
+                throw new Error("User Verification failed. Try again");
             })
     }
     catch (errors: any) {
-        res.json({ errors: errors.message, created: false })
+        res.json({ errors: errors.message, status: false })
     }
 }
 
@@ -51,7 +48,7 @@ export const verifyOTP = async(req: Request, res: Response)=>{
             throw new Error("Empty details are not allowed");
         }
         else{
-            const records = await UserVerification.find({userId});
+            const records = await UserVerification.find({userId}).sort({createdAt: -1});
             if(records?.length<=0){
                 throw new Error("Account record not exists or has been already verified");
             }
@@ -67,26 +64,65 @@ export const verifyOTP = async(req: Request, res: Response)=>{
                         if(!validOTP){
                             throw new Error("Invalid Code");
                         }else{
-                            await User.updateOne({_id: userId}, {verified: true});
+                            const user = await User.findOneAndUpdate({_id: userId}, {verified: true}, {
+                                new: true
+                            });
                             await UserVerification.deleteMany({userId});
-                            res.json({status: "Verfied", message: "User Successfully Verified"});
+                            const data = {
+                                user:{
+                                    id: user?.id
+                                }
+                            }
+                            const userAuthToken = jwt.sign(data,process.env.JWT_SECRET!);
+                            res.json({data: user,userAuthToken: userAuthToken,status: true});
                         }
                     }
                 }
             }
         }
     }catch(error: any){
-        res.json({status: "Failed", errors: error.message})
+        res.json({status: false, errors: error.message})
     }
 }
 
-const sendVerificationMail = async (result: any, res: any) => {
+export const login = async(req: Request, res: Response, next: NextFunction)=>{
+    try{
+        const {email, password} = req.body;
+        if(!email || !password){
+            throw new Error("Details cannot be blank");
+        }
+
+        let user = await User.findOne({email: email});
+        if(!user){
+            throw new Error("Invalid Credentials");
+        }
+        const validPass = await bcrypt.compare(password, user.password);
+        if(!validPass){
+            throw new Error("Invalid Credentials");
+        }
+        if(!user.verified){
+            sendVerificationMail(user, res);
+        }else{
+            // JWT AUTH
+            const data = {
+                user:{
+                    id: user.id
+                }
+            }
+            const userAuthToken = jwt.sign(data,process.env.JWT_SECRET!);
+            res.json({data: user,userAuthToken: userAuthToken,status: true});
+        }
+    }catch(error: any){
+        res.json({status: false, errors: error.message})
+    }
+}
+
+const sendVerificationMail = async (user: any, res: any) => {
         try {
             const otp = `${Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000}`;
             const secotp = await bcrypt.hash(otp, 10);
-
             const newVerification = await new UserVerification({
-                userId: result._id,
+                userId: user._id,
                 otp: secotp,
                 createdAt: Date.now(),
                 expiresAt: Date.now() + 15*60000,
@@ -106,18 +142,18 @@ const sendVerificationMail = async (result: any, res: any) => {
             let transporter = nodemailer.createTransport(config);
             const mailoptions = {
                 from: process.env.AUTH_EMAIL,
-                to: result.email,
+                to: user.email,
                 subject: "Verify your Email",
                 html: `
                     <div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
-                        <div style="margin:50px auto;width:70%;padding:20px 0">
+                        <div style="margin:2px auto;width:90%;padding:0px 0">
                         <div style="border-bottom:1px solid #eee">
                             <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Sortly</a>
                         </div>
-                        <p style="font-size:1.1em">Hi, ${result.name}</p>
-                        <p>Use the following OTP to complete your Sign Up procedures. OTP is valid for 15 minutes</p>
+                        <p style="font-size:1.2em">Hi, <i><b>${user.name}</b></i></p>
+                        <p style="font-size:1.1em">Use the following OTP to complete your Sign Up procedures. OTP is valid for 15 minutes</p>
                         <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${otp}</h2>
-                        <p style="font-size:0.9em;">Regards,<br />Sortly</p>
+                        <p style="font-size:1em;">Regards,<br />Sortly</p>
                         <hr style="border:none;border-top:1px solid #eee" />
                         <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
                             <p>Sortly Inc</p>
@@ -132,11 +168,11 @@ const sendVerificationMail = async (result: any, res: any) => {
                 status: "Pending",
                 message: "OTP sent to email address",
                 data: {
-                    userId: result._id,
-                    email: result.email
+                    userId: user._id,
+                    email: user.email
                 }
             })
         } catch (errors: any) {
-            res.json({ status: "Failed", message: errors.message });
+            res.json({ status: false, message: errors.message });
         };
 }

@@ -2,6 +2,7 @@ import express from 'express'
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import userRoutes from './routes/users'
+import storeRoutes from './routes/stores'
 
 const app = express()
 dotenv.config();
@@ -20,6 +21,7 @@ mongoose.connect(dbURL).then(()=>{
 // Routes setup
 app.use(express.json());
 app.use(userRoutes);
+app.use(storeRoutes);
 
 // Server Setup
 const port = process.env.PORT || 5000;
