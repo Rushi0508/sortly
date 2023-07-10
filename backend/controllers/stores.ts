@@ -18,7 +18,7 @@ export const newStore = async(req:Request, res: Response, next: NextFunction)=>{
             throw new Error("Free Plan can create only one store");
         }else{
             const store = new Store({
-                userId: userId,
+                userId: user._id,
                 name: name,
                 email: email,
                 address: address,

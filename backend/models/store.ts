@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import Item from "./item";
+import Entry from "./entry";
 
 
 interface Store{
@@ -7,14 +9,16 @@ interface Store{
     email: string,
     address: string,
     phone: BigInt,
-    items?: Array<string>,
-    entries?: Array<string>,
-    createdAt?: string
+    items?: Array<Item>,
+    entries?: Array<Entry>,
+    createdAt?: string,
+    updatedAt?: string,
 }
 
 const storeSchema = new mongoose.Schema<Store>({
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
     name: {
         type: String,
@@ -45,6 +49,10 @@ const storeSchema = new mongoose.Schema<Store>({
         }
     ],
     createdAt: {
+        type: Date,
+        default: Date.now()
+    },
+    updatedAt: {
         type: Date,
         default: Date.now()
     }

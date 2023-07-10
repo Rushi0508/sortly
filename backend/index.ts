@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import userRoutes from './routes/users'
 import storeRoutes from './routes/stores'
+import itemRoutes from './routes/items'
 
 const app = express()
 dotenv.config();
@@ -22,6 +23,7 @@ mongoose.connect(dbURL).then(()=>{
 app.use(express.json());
 app.use(userRoutes);
 app.use(storeRoutes);
+app.use(itemRoutes)
 
 // Server Setup
 const port = process.env.PORT || 5000;
