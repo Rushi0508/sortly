@@ -11,7 +11,8 @@ const tagSchema = new mongoose.Schema<Tag>({
         type: String
     },
     itemId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Item'
     },
     createdAt: {
         type: Date,

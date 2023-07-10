@@ -14,7 +14,8 @@ interface Item{
 
 const itemSchema = new mongoose.Schema<Item>({
     storeId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Store'
     },
     name: {
         type: String,

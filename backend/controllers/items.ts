@@ -15,14 +15,14 @@ export const newItem = async(req:Request, res: Response, next: NextFunction)=>{
             throw new Error("Enter all details");
        }
        const item = new Item({
-            storeId: storeId,
+            storeId: store._id,
             name: name,
             quantity: quantity,
             sellPrice: sellPrice,
             costPrice: costPrice,
         })
         tags.forEach((e: any) => {
-             const tag = new Tag({name: e, itemId: item.id});
+             const tag = new Tag({name: e, itemId: item._id});
              tag.save();
              item.tags?.push(tag);
         });
@@ -44,6 +44,7 @@ export const deleteItem = async(req: Request, res: Response)=>{
         }
         await Store.findByIdAndUpdate(item?.storeId, {$pull: {items: itemId}});
         await Item.findByIdAndDelete(itemId);
+        await Tag.deleteMany({itemId: item._id});
         res.json({status: true});
     }
     catch(error: any){
@@ -61,7 +62,7 @@ export const editItem = async(req: Request, res: Response)=>{
         }
         await Tag.deleteMany({itemId: itemId});
         tags.forEach((e: any) => {
-            const tag = new Tag({name: e, itemId: itemId});
+            const tag = new Tag({name: e, itemId: item._id});
             tag.save();
             item?.tags?.push(tag);
         });
