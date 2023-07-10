@@ -8,8 +8,7 @@ import Store from '../models/store'
 
 export const newStore = async(req:Request, res: Response, next: NextFunction)=>{
     try{
-        const userId = req.params.userId;
-        const {name, email, address, phone } = req.body;
+        const {userId, name, email, address, phone } = req.body;
         const user = await User.findById({_id: userId});
         if(!user){
             throw new Error("User not found");
