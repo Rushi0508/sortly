@@ -78,7 +78,7 @@ const sendStoreMail = async (store: any, user: any, res: any)=>{
 
         let transporter = nodemailer.createTransport(config);
         const mailoptions = {
-            from: "Sortly",
+            from: '"Sortly" <sortly@gmail.com>',
             to: store.email,
             subject: "Store Created",
             html: `

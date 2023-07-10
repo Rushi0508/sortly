@@ -141,7 +141,7 @@ const sendVerificationMail = async (user: any, res: any) => {
 
             let transporter = nodemailer.createTransport(config);
             const mailoptions = {
-                from: process.env.AUTH_EMAIL,
+                from: '"Sortly" <sortly@gmail.com>',
                 to: user.email,
                 subject: "Verify your Email",
                 html: `
