@@ -22,7 +22,8 @@ export const newItem = async(req:Request, res: Response, next: NextFunction)=>{
             costPrice: costPrice,
         })
         tags.forEach((e: any) => {
-             const tag = new Tag({name: e, itemId: item._id});
+             const tag = new Tag({name: e, storeId: store._id});
+             tag.items?.push(item.id)
              tag.save();
              item.tags?.push(tag);
         });
@@ -43,8 +44,8 @@ export const deleteItem = async(req: Request, res: Response)=>{
             throw new Error("Item not found");
         }
         await Store.findByIdAndUpdate(item?.storeId, {$pull: {items: itemId}});
+        await Tag.updateMany({storeId: item?.storeId}, {$pull: {items: itemId}})
         await Item.findByIdAndDelete(itemId);
-        await Tag.deleteMany({itemId: item._id});
         res.json({status: true});
     }
     catch(error: any){
@@ -56,13 +57,14 @@ export const editItem = async(req: Request, res: Response)=>{
     try{
         const { name, quantity, costPrice, sellPrice, tags} = req.body;
         const itemId = req.params.itemId;
-        const item = await Item.findByIdAndUpdate(itemId, { "$set": { "tags": [] }});
+        // const item = await Item.findByIdAndUpdate(itemId, { "$set": { "tags": [] }});
+        const item = await Item.findById(itemId)
         if(!item){
             throw new Error("Item not found");
         }
-        await Tag.deleteMany({itemId: itemId});
         tags.forEach((e: any) => {
-            const tag = new Tag({name: e, itemId: item._id});
+            const tag = new Tag({name: e, storeId: item.storeId});
+            tag.items?.push(item.id)
             tag.save();
             item?.tags?.push(tag);
         });
