@@ -53,9 +53,9 @@ export const deleteStore = async(req: Request, res: Response)=>{
 export const editStore = async(req: Request, res: Response)=>{
     try{
         const storeId = req.params.storeId;
-        const store = await Store.findByIdAndUpdate(storeId, {...req.body});
+        const store = await Store.findByIdAndUpdate(storeId, {...req.body,updatedAt: Date.now()});
         if(!store){
-            throw new Error("Store not found");
+            throw new Error("Store details not updated");
         }
         res.json({status: true});
     }
