@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
 import '../static/css/otp.css'
 import OTPInput from 'otp-input-react' 
 import toast from 'react-hot-toast'
