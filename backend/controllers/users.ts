@@ -45,7 +45,11 @@ export const verifyOTP = async(req: Request, res: Response)=>{
     try{
         let {userId, otp} = req.body;
         if(!userId || !otp){
-            throw new Error("Empty details are not allowed");
+            if(!userId){
+                throw new Error("User not found");
+            }else{
+                throw new Error("Empty details are not allowed");
+            }
         }
         else{
             const records = await UserVerification.find({userId}).sort({createdAt: -1});
@@ -173,6 +177,6 @@ const sendVerificationMail = async (user: any, res: any) => {
                 }
             })
         } catch (errors: any) {
-            res.json({ status: false, message: errors.message });
+            res.json({ status: false, mail_errors: errors.message });
         };
 }
