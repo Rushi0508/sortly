@@ -13,9 +13,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         // Finding if already exists
         let user = await User.findOne({ email: email });
         if (user) {
-            if (user.verified) {
-                throw new Error("Email already registered");
-            }
+            throw new Error("Email already registered");
         }
 
         const salt = 10;

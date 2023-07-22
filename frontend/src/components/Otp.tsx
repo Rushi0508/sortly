@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import '../static/css/otp.css'
 import OTPInput from 'otp-input-react' 
 import toast from 'react-hot-toast'
@@ -8,6 +8,7 @@ import {useNavigate} from 'react-router-dom'
 const Otp: FC = () => {
     const [OTP, setOTP] = useState("")
     const navigate = useNavigate();
+    const email = localStorage.getItem('user_email')
 
     const handleSubmit = async (e)=>{
         e.preventDefault();
@@ -26,7 +27,8 @@ const Otp: FC = () => {
                 toast.success("Verified Successfully");
                 localStorage.setItem('user_token', data.userAuthToken);
                 localStorage.setItem('user_id', data.data._id);
-                navigate('/dashboard')
+                localStorage.removeItem('user_email')
+                navigate('/')
             }else{
                 toast.error("Something went wrong!!")
             }
@@ -38,7 +40,7 @@ const Otp: FC = () => {
                 <div className="position-relative">
                     <div className="otp-card card px-2 text-center">
                         <h6 className='m-2' >Please enter the one time password <br/> to verify your account</h6>
-                        <div className='m-2'> <span>A code has been sent to</span> <small>*******9897</small> </div>
+                        <div className='m-2'> <span>A code has been sent to</span> <small>{email}</small> </div>
                         <form action="" onSubmit={handleSubmit}>
                             <div id="otp" className="otp-inputs d-flex flex-row justify-content-center mt-2">
                                 <OTPInput

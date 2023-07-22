@@ -1,14 +1,14 @@
 import {Route, Routes} from 'react-router-dom'
 import Login from './components/Login'
 import {Toaster} from 'react-hot-toast'
-import Otp from './components/Otp'
+import Register from './components/Register'
 
 function App() {
   return (
     <>
       <Routes>
         <Route path='/login' element={<Login/>} />
-        <Route path='/verify-otp' element={<Otp/>} />
+        <Route path='/register' element={<Register/>} />
       </Routes>
       <Toaster
         position="top-center"
