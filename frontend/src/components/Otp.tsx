@@ -36,13 +36,13 @@ const Otp: FC = () => {
     }
     return (
         <>
-            <div className="container height-100 d-flex justify-content-center align-items-center">
-                <div className="position-relative">
+            <div className="height-100 flex justify-center items-center">
+                <div className="relative">
                     <div className="otp-card card px-2 text-center">
                         <h6 className='m-2' >Please enter the one time password <br/> to verify your account</h6>
-                        <div className='m-2'> <span>A code has been sent to</span> <small>{email}</small> </div>
+                        <div className='m-2'> <span>A code has been sent to <i className='text-gray-500'>{email}</i></span></div>
                         <form action="" onSubmit={handleSubmit}>
-                            <div id="otp" className="otp-inputs d-flex flex-row justify-content-center mt-2">
+                            <div id="otp" className="otp-inputs flex flex-row justify-center m-2">
                                 <OTPInput
                                     value={OTP}
                                     onChange={setOTP}
@@ -55,10 +55,10 @@ const Otp: FC = () => {
                                         width: "40px",
                                         height: "40px",
                                     }}
-                                    inputClassName = "otp-control form-control rounded"
+                                    inputClassName = "appearance-none border rounded-md leading-tight focus:outline-none focus:border-2 focus:border-red-500"
                                 />
                             </div>
-                            <div className="mt-4"> <button type='submit' className="btn btn-danger px-4 otp-validate">Validate</button> </div>
+                            <div className="mt-4"> <button type='submit' className="text-white bg-red-500 hover:bg-red-600 px-4 otp-validate">Validate</button> </div>
                         </form>
                     </div>
                 </div>
