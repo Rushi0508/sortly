@@ -11,3 +11,17 @@
     text-decoration: none !important;
     font-family: 'DM Sans', sans-serif;
 }
+
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+html,
+body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}

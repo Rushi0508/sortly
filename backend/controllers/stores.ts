@@ -8,8 +8,11 @@ import Store from '../models/store'
 
 export const newStore = async(req:Request, res: Response, next: NextFunction)=>{
     try{
-        const {userId, name, email, address, phone } = req.body;
-        const user = await User.findById({_id: userId});
+        const {userId, name, email, city, phone } = req.body;
+        if(!userId){
+            throw new Error("User not found");
+        }
+        const user = await User.findById(userId);
         if(!user){
             throw new Error("User not found");
         }
@@ -20,7 +23,7 @@ export const newStore = async(req:Request, res: Response, next: NextFunction)=>{
                 userId: user._id,
                 name: name,
                 email: email,
-                address: address,
+                city: city,
                 phone: phone
             })
             user.stores?.push(store);

@@ -7,7 +7,7 @@ interface Store{
     userId?: string,
     name: string,
     email: string,
-    address: string,
+    city: string,
     phone: BigInt,
     items?: Array<Item>,
     entries?: Array<Entry>,
@@ -28,9 +28,9 @@ const storeSchema = new mongoose.Schema<Store>({
         type: String,
         required: [true, "Email is required"]
     },
-    address: {
+    city: {
         type: String,
-        required: [true, "Address is required"],
+        required: [true, "City is required"],
     },
     phone: {
         type: String,
