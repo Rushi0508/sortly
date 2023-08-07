@@ -5,6 +5,7 @@ import cors from 'cors'
 import userRoutes from './routes/users'
 import storeRoutes from './routes/stores'
 import itemRoutes from './routes/items'
+import stripeRoutes from './routes/stripe'
 
 const app = express()
 dotenv.config();
@@ -26,6 +27,7 @@ app.use(express.json());
 app.use(userRoutes);
 app.use(storeRoutes);
 app.use(itemRoutes)
+app.use(stripeRoutes)
 
 // Server Setup
 const port = process.env.PORT || 5000;

@@ -12,7 +12,8 @@
     "jsonwebtoken": "^9.0.1",
     "mongoose": "^7.3.2",
     "nodemailer": "^6.9.3",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "stripe": "^12.17.0"
   },
   "scripts": {
     "start": "nodemon index.ts",

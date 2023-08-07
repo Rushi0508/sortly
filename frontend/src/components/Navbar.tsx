@@ -1,7 +1,7 @@
 import { Fragment, useEffect } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import {useNavigate } from 'react-router-dom'
+import {Link, useNavigate } from 'react-router-dom'
 import { Combobox } from './ComboBox'
 
 const navigation = [
@@ -9,6 +9,7 @@ const navigation = [
   { name: 'Stock', href: '/stock', current: false },
   { name: 'Items', href: '/items', current: false },
   { name: 'Entries', href: '/entries', current: false },
+  { name: 'Plans', href: '/plans', current: false },
 ]
 
 function classNames(...classes) {
@@ -55,9 +56,9 @@ export const Navbar = () => {
                   <div className="hidden sm:ml-6 sm:block">
                     <div className="flex space-x-4">
                       {navigation.map((item) => (
-                        <a
+                        <Link
                           key={item.name}
-                          href={item.href}
+                          to={item.href}
                           className={classNames(
                             item.current ? 'bg-[#f3f4f6] text-black-900' : 'text-black hover:bg-[#f3f4f6] hover:text-black',
                             'rounded-md px-3 py-2 text-sm font-medium'
@@ -65,7 +66,7 @@ export const Navbar = () => {
                           aria-current={item.current ? 'page' : undefined}
                         >
                           {item.name}
-                        </a>
+                        </Link>
                       ))}
                     </div>
                   </div>
