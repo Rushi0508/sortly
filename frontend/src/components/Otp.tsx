@@ -4,11 +4,14 @@ import OTPInput from 'otp-input-react'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
+import {useUserStore} from './zustand/useUserStore'
 
 const Otp: FC = () => {
     const [OTP, setOTP] = useState("")
     const navigate = useNavigate();
     const email = localStorage.getItem('user_email')
+
+    const addUser = useUserStore((state: any)=> state.addUser);
 
     const handleSubmit = async (e)=>{
         e.preventDefault();
@@ -28,6 +31,7 @@ const Otp: FC = () => {
                 localStorage.setItem('user_token', data.userAuthToken);
                 localStorage.setItem('user_id', data.data._id);
                 localStorage.removeItem('user_email')
+                addUser(data.data);                
                 navigate('/')
             }else{
                 toast.error("Something went wrong!!")

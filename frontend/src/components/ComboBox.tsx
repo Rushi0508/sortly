@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { PlusCircledIcon } from '@radix-ui/react-icons'
 import {useForm} from 'react-hook-form'
@@ -30,39 +30,27 @@ import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import axios from "axios"
 import toast from "react-hot-toast"
+import { useStoreStore } from "./zustand/useStoreStore"
+import { useUserStore } from "./zustand/useUserStore"
 // import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-]
 
-export function Combobox() {
+export function Combobox() {    
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
   const [showStoreDialog, setStoreDialog] = React.useState(false)
   const userId = localStorage.getItem('user_id');
   const token = localStorage.getItem('user_token');
+
+//   const user = useUserStore((state: any)=>state.user)
+  const stores = useStoreStore((state: any)=>state.stores);
+  const addStore = useStoreStore((state: any)=>state.addStore);
+  const fetchStore = useStoreStore((state: any)=>state.fetchStore);
+  const fetchStores = useStoreStore((state: any)=>state.fetchStores);
+  const currentStore = useStoreStore((state: any)=>state.currentStore);
+  const setCurrentStore = useStoreStore((state:any)=>state.setCurrentStore)  
+  
 
   const onSubmit = async (body) => {
     setIsLoading(true);
@@ -86,9 +74,19 @@ export function Combobox() {
         localStorage.removeItem('user_token')
     }
     else{
-      toast.success('Store created successfully')
+      toast.success('Store created successfully');
+      addStore([...stores, data.data.store])
+      setCurrentStore(data.data.store)
+      console.log(stores);
     }
+    setStoreDialog(false)
     setIsLoading(false)
+  }
+
+  const handleStoreStatus = async (storeId)=>{
+    await axios.get(
+        `http://localhost:5000/api/activestore?user=${userId}&store=${storeId}`
+    )
   }
 
   const {
@@ -96,6 +94,16 @@ export function Combobox() {
     handleSubmit,
     formState: { errors }
   } = useForm();
+
+  useEffect(()=>{    
+    const fetchData = async ()=>{
+        await fetchStores(userId)
+        await fetchStore(userId)
+    }
+    if(stores.length === 0){
+        fetchData()
+    }
+  },[])
 
   return (
     <Dialog open={showStoreDialog} onOpenChange={setStoreDialog}>
@@ -107,32 +115,32 @@ export function Combobox() {
             aria-expanded={open}
             className="w-[200px] justify-between"
             >
-            {value
-                ? frameworks.find((framework) => framework.value === value)?.label
-                : "Select framework..."}
+            {currentStore? currentStore.name:"Select Store"}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
+        <PopoverContent className="w-[200px] p-0" onSelect={()=>setCurrentStore(stores[0])}>
             <Command>
                 <CommandList>
-                    <CommandEmpty>No framework found.</CommandEmpty>
+                    <CommandEmpty>No Store found.</CommandEmpty>
                     <CommandGroup>
-                        {frameworks.map((framework) => (
+                        {stores.map((store,index) => (
                         <CommandItem
-                            key={framework.value}
-                            onSelect={(currentValue) => {
-                            setValue(currentValue === value ? "" : currentValue)
-                            setOpen(false)
+                            key={store._id}
+                            onSelect={() => {                                
+                                setCurrentStore(stores[index])
+                                handleStoreStatus(store._id);
+                                console.log(currentStore);
+                                setOpen(false)
                             }}
                         >
                             <Check
                             className={cn(
                                 "mr-2 h-4 w-4",
-                                value === framework.value ? "opacity-100" : "opacity-0"
+                                currentStore && store.name === currentStore.name ? "opacity-100" : "opacity-0"
                             )}
                             />
-                            {framework.label}
+                            {store.name}
                         </CommandItem>
                         ))}
                     </CommandGroup>
@@ -142,11 +150,12 @@ export function Combobox() {
                         <CommandGroup>
                             <DialogTrigger asChild>
                                 <CommandItem
-                                    key={"framework.value"}
+                                    key={userId}
                                     onSelect={() => {
                                         setOpen(false)
                                         setStoreDialog(true)
                                     }}
+                                    className=" cursor-pointer"
                                 >
                                     <PlusCircledIcon className="mr-2 h-5 w-5" /> Create Store
                                 </CommandItem>

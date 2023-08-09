@@ -67,6 +67,27 @@ export const editStore = async(req: Request, res: Response)=>{
     }
 }
 
+export const fetchStore = async (req: Request, res: Response)=>{
+    const userId = req.body.userId;
+
+    const user = await User.findById(userId);
+    let store;
+    if(user?.lastActive == "" ){
+        store = await Store.findOne({userId: userId});
+    }else{
+        store = await Store.findById(user?.lastActive);
+    }
+
+    res.json({data: store})
+}
+
+export const fetchStores = async (req: Request, res: Response)=>{
+    const userId = req.body.userId;
+
+    const stores = await Store.find({userId: userId})
+    res.json({data: stores})
+}
+
 const sendStoreMail = async (store: any, user: any, res: any)=>{
     try{
         // mail configrations

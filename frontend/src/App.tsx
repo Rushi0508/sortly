@@ -5,6 +5,7 @@ import Register from './components/Register'
 import Error from './components/Error'
 import Dashboard from './components/Dashboard'
 import Plan from './components/Plan'
+import Success from './components/Success'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path='/register' element={<Register/>} />
         <Route path='/' element={<Dashboard/>} />
         <Route path='/plans' element={<Plan/>} />
+        <Route path='/success' element={<Success/>} />
         <Route path='*' element={<Error/>} /> 
       </Routes>
       <Toaster

@@ -119,6 +119,31 @@ export const login = async(req: Request, res: Response, next: NextFunction)=>{
     }
 }
 
+export const fetchUser = async (req: Request, res: Response)=>{
+    const userId = req.body.userId;    
+
+    const user = await User.findById(userId);
+
+    res.json({data: user});
+}
+
+export const updatePlan = async (req: Request, res: Response)=>{
+    const userId = req.query.user   
+    const plan = req.query.plan as string
+    plan?.toUpperCase()  
+
+    await User.updateOne({_id: userId}, {$set: {plan: plan, planCreatedAt: Date.now()}})
+    res.json({status: true})
+}
+
+export const changeStoreStatus =async (req:Request, res: Response ) => {
+    const storeId = req.query.store;
+    const userId = req.query.user;
+
+    await User.findByIdAndUpdate(userId, {$set: {lastActive: storeId}})
+    res.json({status: true})
+}
+
 const sendVerificationMail = async (user: any, res: any) => {
         try {
             const otp = `${Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000}`;

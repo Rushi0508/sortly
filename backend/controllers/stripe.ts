@@ -24,8 +24,8 @@ export const stripeCheckout = async (req: Request,res: Response)=>{
             },
         ],
         mode: 'payment',
-        success_url: 'http://localhost:5173/checkout',
-        cancel_url: 'http://localhost:5173/checkout-cancel'
+        success_url: 'http://localhost:5173/success',
+        cancel_url: 'http://localhost:5173/plans'
     });
     res.json({url: session.url})
 }

@@ -1,11 +1,12 @@
 import { Fragment, useEffect } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import {Link, useNavigate } from 'react-router-dom'
+import {Link, useLocation, useNavigate } from 'react-router-dom'
 import { Combobox } from './ComboBox'
+import { useUserStore } from './zustand/useUserStore'
 
 const navigation = [
-  { name: 'Dashboard', href: '/', current: true },
+  { name: 'Dashboard', href: '/', current: false },
   { name: 'Stock', href: '/stock', current: false },
   { name: 'Items', href: '/items', current: false },
   { name: 'Entries', href: '/entries', current: false },
@@ -17,13 +18,20 @@ function classNames(...classes) {
 }
 
 export const Navbar = () => {
+  const location = useLocation()
   const navigate = useNavigate();
   const userId = localStorage.getItem('user_id');
   const token = localStorage.getItem('user_token');
 
+  const user = useUserStore((state:any)=>state.user)
+  const fetchUser = useUserStore((state:any)=>state.fetchUser)
+
   useEffect(()=>{
     if(!token || !userId){
       navigate('/login')
+    }
+    if(Object.keys(user).length === 0){      
+      fetchUser(userId)
     }
   }, [])
 
@@ -60,7 +68,7 @@ export const Navbar = () => {
                           key={item.name}
                           to={item.href}
                           className={classNames(
-                            item.current ? 'bg-[#f3f4f6] text-black-900' : 'text-black hover:bg-[#f3f4f6] hover:text-black',
+                            location.pathname===item.href ? 'bg-[#f3f4f6] text-black-900' : 'text-black hover:bg-[#f3f4f6] hover:text-black',
                             'rounded-md px-3 py-2 text-sm font-medium'
                           )}
                           aria-current={item.current ? 'page' : undefined}
