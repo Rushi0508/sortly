@@ -80,3 +80,32 @@ export const editItem = async(req: Request, res: Response)=>{
     }
 }
 
+export const fetchItems = async (req: Request, res: Response)=>{
+    const {filterTags,storeId,sort} = req.body;
+    let items;  
+    if(filterTags.length===0){
+        if(sort==="Recent"){
+            items = await Item.find({storeId: storeId}).sort({createdAt: -1}).populate({path: 'tags',select: '_id name'});
+        }
+        else if(sort === "Oldest"){
+            items = await Item.find({storeId: storeId}).sort({createdAt: 1}).populate({path: 'tags',select: '_id name'});
+        }
+    }
+    else{
+        if(sort==="Recent"){
+            items = await Item.find({storeId: storeId,tags:{$in: filterTags}}).sort({createdAt: -1}).populate({path: 'tags',select: '_id name'});
+        }
+        else if(sort === "Oldest"){
+            items = await Item.find({storeId: storeId,tags:{$in: filterTags}}).sort({createdAt: 1}).populate({path: 'tags',select: '_id name'});
+        }
+    }
+    res.json({items: items});
+}
+
+export const fetchTags = async (req: Request, res: Response)=>{
+    const storeId = req.body.storeId;    
+
+    const tags = await Tag.find({storeId: storeId});
+    
+    res.json({tags: tags});
+}
