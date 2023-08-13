@@ -5,6 +5,7 @@ import cors from 'cors'
 import userRoutes from './routes/users'
 import storeRoutes from './routes/stores'
 import itemRoutes from './routes/items'
+import tagRoutes from './routes/tags'
 import stripeRoutes from './routes/stripe'
 
 const app = express()
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use(userRoutes);
 app.use(storeRoutes);
 app.use(itemRoutes)
+app.use(tagRoutes)
 app.use(stripeRoutes)
 
 // Server Setup

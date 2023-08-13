@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
-import { PlusCircledIcon } from '@radix-ui/react-icons'
+import { PlusCircledIcon, ExitIcon } from '@radix-ui/react-icons'
 import {useForm} from 'react-hook-form'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -148,7 +148,7 @@ export function Combobox() {
                 <CommandSeparator/>
                     <CommandList>
                         <CommandGroup>
-                            <DialogTrigger asChild>
+                            {/* <DialogTrigger asChild> */}
                                 <CommandItem
                                     key={userId}
                                     onSelect={() => {
@@ -159,7 +159,16 @@ export function Combobox() {
                                 >
                                     <PlusCircledIcon className="mr-2 h-5 w-5" /> Create Store
                                 </CommandItem>
-                            </DialogTrigger>
+                                <CommandItem
+                                    onSelect={() => {
+                                        localStorage.clear();
+                                        navigate('/login')
+                                    }}
+                                    className=" cursor-pointer"
+                                >
+                                    <ExitIcon className="mr-2 h-5 w-5"/> Logout
+                                </CommandItem>
+                            {/* </DialogTrigger> */}
                         </CommandGroup>
                     </CommandList>
             </Command>

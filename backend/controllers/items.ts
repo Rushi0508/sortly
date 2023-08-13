@@ -21,12 +21,10 @@ export const newItem = async(req:Request, res: Response, next: NextFunction)=>{
             unit: unit,
             sellPrice: sellPrice,
             costPrice: costPrice,
+            tags: tags
         })
-        tags.forEach((e: any) => {
-             const tag = new Tag({name: e, storeId: store._id});
-             tag.items?.push(item.id)
-             tag.save();
-             item.tags?.push(tag);
+        tags.forEach(async(tagId: any) => {
+            await Tag.findByIdAndUpdate(tagId, {$push: {items: item.id}});
         });
         store.items?.push(item.id);
         await item.save();
@@ -81,9 +79,15 @@ export const editItem = async(req: Request, res: Response)=>{
 }
 
 export const fetchItems = async (req: Request, res: Response)=>{
-    const {filterTags,storeId,sort} = req.body;
-    let items;  
-    if(filterTags.length===0){
+    const {filterTags,storeId,sort,search} = req.body;
+    let items;
+    if(search.length>0){        
+        const search = req.body.search;
+        const regex = new RegExp(search, 'i');
+        
+        items = await Item.find({storeId: storeId, name: { $regex: regex }}).populate({path: 'tags',select: '_id name'});
+    }  
+    else if(filterTags.length===0){
         if(sort==="Recent"){
             items = await Item.find({storeId: storeId}).sort({createdAt: -1}).populate({path: 'tags',select: '_id name'});
         }
@@ -100,12 +104,4 @@ export const fetchItems = async (req: Request, res: Response)=>{
         }
     }
     res.json({items: items});
-}
-
-export const fetchTags = async (req: Request, res: Response)=>{
-    const storeId = req.body.storeId;    
-
-    const tags = await Tag.find({storeId: storeId});
-    
-    res.json({tags: tags});
 }

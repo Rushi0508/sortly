@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import {useForm} from 'react-hook-form'
+import Select from 'react-select'
 import ItemCard from './ItemCard';
 import {
     Dialog,
@@ -20,6 +21,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useStoreStore } from './zustand/useStoreStore';
 import { useTagStore } from './zustand/useTagStore';
+import { Separator } from './ui/separator';
 
 const sortOptions = [
     {
@@ -31,14 +33,18 @@ const sortOptions = [
 ]
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
-  }
+}
 
 export default function Items() {
     const [showItemDialog, setItemDialog] = useState(false);
+    const [showTagDialog, setTagDialog] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [items,setItems] = useState(null);
     const [sort,setSort] = useState("Recent");
     const [filterTags, setFilterTags] = useState([])
+    const [search,setSearch] = useState("");
+    const [newTags, setNewTags] = useState("");
+    const [itemTags, setItemTags] = useState([]);
     
     const userId = localStorage.getItem('user_id');
 
@@ -48,6 +54,8 @@ export default function Items() {
     const tags = useTagStore((state: any)=>state.tags);
     const fetchTags = useTagStore((state: any)=>state.fetchTags);
 
+    const options = tags.map((tag) => ({ value: tag._id, label: tag.name }));
+
     const handleTagChange = (tagId) => {
         if (filterTags.includes(tagId)) {
           setFilterTags(prevFilterTags => prevFilterTags.filter(id => id !== tagId));
@@ -55,12 +63,44 @@ export default function Items() {
           setFilterTags(prevFilterTags => [...prevFilterTags, tagId]);
         }
     };
+
+    const handleSelectChange = (selectedOptions) => {
+        setItemTags(selectedOptions);
+    };
+
+    const submitNewTag = async ()=>{
+        setIsLoading(true);
+        const storeId = currentStore._id;
+
+        const formattedString = newTags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag !== "")
+        .map((tag) => tag.charAt(0).toUpperCase() + tag.slice(1))
+        .join(", ");
+
+        const tagsArray = formattedString.split(", ").filter((item) => item.trim() !== "");
+
+        if(tagsArray.length==0){
+            toast.error("Empty Category cannot be added")
+        }
+        const {data} = await axios.post(
+            'http://localhost:5000/api/addTag',
+            {storeId, tagsArray}
+        )
+        if(data.hasOwnProperty('status')){
+            toast.success("Category added successfully");
+        }
+        setNewTags("");
+        setIsLoading(false);
+        setTagDialog(false);
+        fetchTags(storeId);
+    }
       
 
     const onSubmit = async (body) => {
         setIsLoading(true);
-        const tags = body.tags.split(" ");
-        body.tags = tags;
+        body.tags = itemTags.map((tag)=>(tag.value))
         body.storeId = currentStore._id;
         console.log(body);
         
@@ -75,20 +115,21 @@ export default function Items() {
         else{
             toast.success("Item added successfully")
         }
+        reset();
         setIsLoading(false);
         setItemDialog(false);
-        fetchItems(sort,filterTags);
+        fetchItems(sort,filterTags,search);
         fetchStore(userId);
         fetchStores(userId);
     }
 
-    const fetchItems = async (sort, filterTags)=>{
+    const fetchItems = async (sort, filterTags,search)=>{
         const storeId = currentStore?._id;
         console.log(storeId);
         
         let {data} = await axios.post(
             'http://localhost:5000/api/fetchItems',
-            {storeId,filterTags,sort}
+            {storeId,filterTags,sort,search}
         )        
         setItems(data.items);
     }
@@ -96,20 +137,20 @@ export default function Items() {
     const {
         register,
         handleSubmit,
-        formState: { errors }
+        formState: { errors },
+        reset
     } = useForm();
 
     useEffect(()=>{
-        fetchItems(sort,filterTags);
+        fetchItems(sort,filterTags,search);
         if(tags.length===0){
             fetchTags(currentStore?._id);
         }
-    }, [currentStore,sort,filterTags])
+    }, [currentStore,sort,filterTags,search])
 
     return (
         <Layout>
             {!items? 
-            
             <div className='h-[90vh] flex justify-center items-center'>
                 <svg style={{width: "2rem", height: "2rem" }} className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -117,11 +158,12 @@ export default function Items() {
                 </svg> 
             </div>
             : (
+            <>
             <Dialog open={showItemDialog} onOpenChange={setItemDialog}>
                 <div className='bg-[#f3f4f6] min-h-[100vh] w-full'>
                     <div className="flex justify-center items-center m-4">
                         <div className="relative w-[30%]">
-                            <input type="search" id="location-search" className="block p-2.5 w-full z-20 text-base text-gray-900 bg-gray-50 border border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 rounded-md" placeholder="Search For city or address" required/>
+                            <input value={search} onChange={(e)=>{setSearch(e.target.value)}} type="search" id="location-search" className="block p-2.5 w-full z-20 text-base text-gray-900 bg-gray-50 border border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 rounded-md" placeholder="Search Items..." required/>
                             <button type="submit" className="absolute top-0 right-0 h-full p-2.5 text-sm font-medium text-white bg-gray-800 rounded-r-md border border-gray-700 hover:bg-gray-900">
                                 <svg className="w-7 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
@@ -207,6 +249,15 @@ export default function Items() {
                             leaveTo="transform opacity-0 scale-95"
                             >
                                 <Menu.Items className="absolute z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div className="flex items-center pt-2 px-3" onClick={()=>setTagDialog(true)}>
+                                        <AiOutlinePlus/>
+                                        <label
+                                            className="ml-3 min-w-0 flex-1 text-gray-500"
+                                            >
+                                            New Tag
+                                        </label>
+                                    </div>
+                                    <Separator className='mt-1'/>
                                     <div className="py-1">
                                     {tags.map((tag) => (
                                     <div key={tag._id} className="flex items-center p-1 px-3">
@@ -313,16 +364,12 @@ export default function Items() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="tags">Tags</Label>
-                            <Input
-                                type="text" id="tags" placeholder="Enter tags separated by space." 
-                                {...register("tags", {
-                                    required: true,
-                                })}
-                                disabled={isLoading}
+                            <Select
+                                options={options} 
+                                value={itemTags}
+                                onChange={handleSelectChange}
+                                isMulti
                             />
-                            {errors.tags && errors.tags.type === "required" && (
-                                <p className="mt-1 mb-0 text-red-600">Tags are required.</p>
-                            )}
                         </div>
                         
                     </div>
@@ -345,6 +392,46 @@ export default function Items() {
                 </DialogContent>
                 </form>
             </Dialog>
+            {/* TAG DIALOG  */}
+            <Dialog open={showTagDialog} onOpenChange={setTagDialog}>
+                <form action="">
+                <DialogContent className='overflow-auto no-scrollbar'>
+                    <DialogHeader>
+                        <DialogTitle className="tracking-normal">Add New Category</DialogTitle>
+                    </DialogHeader>
+                    <div>
+                    <div className="py-2 pb-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Category name</Label>
+                            <Input
+                                value={newTags}
+                                onChange={(e)=>setNewTags(e.target.value)}
+                                id="name" placeholder="Category Name"
+                                disabled={isLoading}
+                            />
+                            <span className='text-sm text-gray-500 italic'>Multiple Tags can be added separated by comma</span>
+                        </div>
+                    </div>
+                    </div>
+                    <DialogFooter>
+                    <Button variant="outline" onClick={() => setTagDialog(false)}>
+                        Cancel
+                    </Button>
+                    <Button onClick={submitNewTag}>
+                    {isLoading ? (
+                        <svg style={{width: "1.5rem", height: "1.5rem" }} className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        ) : (
+                        null
+                    )}
+                    Continue</Button>
+                    </DialogFooter>
+                </DialogContent>
+                </form>
+            </Dialog>
+            </>
             )}
         </Layout>
     )

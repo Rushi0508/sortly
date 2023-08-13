@@ -1,5 +1,5 @@
 import express from 'express'
-import { deleteItem, editItem, newItem, fetchItems, fetchTags } from '../controllers/items';
+import { deleteItem, editItem, newItem, fetchItems} from '../controllers/items';
 
 const router = express.Router();
 
@@ -10,7 +10,5 @@ router.route('/api/item/:itemId')
     .put(editItem)
 router.route('/api/fetchItems')
     .post(fetchItems);
-router.route('/api/fetchTags')
-    .post(fetchTags);
 
 export default router;
