@@ -116,6 +116,7 @@ export default function Items() {
             toast.success("Item added successfully")
         }
         reset();
+        setItemTags([])
         setIsLoading(false);
         setItemDialog(false);
         fetchItems(sort,filterTags,search);
