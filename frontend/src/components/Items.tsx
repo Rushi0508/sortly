@@ -175,9 +175,7 @@ export default function Items() {
 
     useEffect(()=>{
         fetchItems(sort,filterTags,search);
-        if(tags.length===0){
-            fetchTags(currentStore?._id);
-        }
+        fetchTags(currentStore?._id);
     }, [currentStore,sort,filterTags,search])
 
     return (
