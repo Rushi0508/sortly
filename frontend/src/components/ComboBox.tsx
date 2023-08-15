@@ -5,6 +5,7 @@ import {useForm} from 'react-hook-form'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
+import {LiaStoreAltSolid} from 'react-icons/lia'
 import {
   Command,
   CommandEmpty,
@@ -115,6 +116,7 @@ export function Combobox() {
             aria-expanded={open}
             className="w-[200px] justify-between"
             >
+                <LiaStoreAltSolid className='w-5 h-5'/>
             {currentStore? currentStore.name:"Select Store"}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>

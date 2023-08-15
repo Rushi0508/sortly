@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.route('/api/addItem')
     .post(newItem)
-router.route('/api/item/:itemId')
-    .delete(deleteItem)
+router.route('/api/deleteItem')
+    .post(deleteItem)
     .put(editItem)
 router.route('/api/fetchItems')
     .post(fetchItems);

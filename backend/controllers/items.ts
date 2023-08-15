@@ -37,18 +37,17 @@ export const newItem = async(req:Request, res: Response, next: NextFunction)=>{
 
 export const deleteItem = async(req: Request, res: Response)=>{
     try{
-        const itemId = req.params.itemId;
-        const item = await Item.findById(itemId);
-        if(!item){
-            throw new Error("Item not found");
-        }
+        const item = req.body.deleteItem;
+        const itemId = item._id;
+
         await Store.findByIdAndUpdate(item?.storeId, {$pull: {items: itemId}});
         await Tag.updateMany({storeId: item?.storeId}, {$pull: {items: itemId}})
         await Item.findByIdAndDelete(itemId);
+        
         res.json({status: true});
     }
     catch(error: any){
-        res.json({status: false, errors: error.message});
+        res.json({status: false, errors: error});
     }
 }
 

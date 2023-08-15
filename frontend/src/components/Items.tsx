@@ -36,15 +36,24 @@ function classNames(...classes) {
 }
 
 export default function Items() {
+    // States for Dialog
     const [showItemDialog, setItemDialog] = useState(false);
     const [showTagDialog, setTagDialog] = useState(false);
+    // Loader state
     const [isLoading, setIsLoading] = useState(false);
+    // items state
     const [items,setItems] = useState(null);
+    // filtering states
     const [sort,setSort] = useState("Recent");
     const [filterTags, setFilterTags] = useState([])
     const [search,setSearch] = useState("");
+    // Create New Category States
     const [newTags, setNewTags] = useState("");
+    // Item tags during item creation 
     const [itemTags, setItemTags] = useState([]);
+    // Delete States
+    const [showDeleteDialog, setDeleteDialog] = useState(false);
+    const [deleteItem, setDeleteItem] = useState(null);
     
     const userId = localStorage.getItem('user_id');
 
@@ -56,6 +65,7 @@ export default function Items() {
 
     const options = tags.map((tag) => ({ value: tag._id, label: tag.name }));
 
+    // filter Tags handling
     const handleTagChange = (tagId) => {
         if (filterTags.includes(tagId)) {
           setFilterTags(prevFilterTags => prevFilterTags.filter(id => id !== tagId));
@@ -63,11 +73,11 @@ export default function Items() {
           setFilterTags(prevFilterTags => [...prevFilterTags, tagId]);
         }
     };
-
+    // set tags while item creation
     const handleSelectChange = (selectedOptions) => {
         setItemTags(selectedOptions);
     };
-
+    // new tag creation
     const submitNewTag = async ()=>{
         setIsLoading(true);
         const storeId = currentStore._id;
@@ -97,7 +107,7 @@ export default function Items() {
         fetchTags(storeId);
     }
       
-
+    // New Item submit
     const onSubmit = async (body) => {
         setIsLoading(true);
         body.tags = itemTags.map((tag)=>(tag.value))
@@ -123,7 +133,28 @@ export default function Items() {
         fetchStore(userId);
         fetchStores(userId);
     }
+    // Item Deletion
+    const onDelete = async ()=>{
+        setIsLoading(true)
+        const {data} = await axios.post(
+            `http://localhost:5000/api/deleteItem`,
+            {deleteItem}
+        )
 
+        if(data.hasOwnProperty('errors')){
+            toast.error('Something went wrong! Try Again');
+        }
+        else if(data.hasOwnProperty('status')){
+            toast.success('Item Deleted');
+        }
+        setIsLoading(false)
+        setDeleteDialog(false);
+        setDeleteItem(null);
+        fetchItems(sort,filterTags,search);
+        fetchStore(userId);
+        fetchStores(userId);
+    }
+    // Fetch Items on request
     const fetchItems = async (sort, filterTags,search)=>{
         const storeId = currentStore?._id;
         console.log(storeId);
@@ -285,7 +316,12 @@ export default function Items() {
                     </div>    
                     <div className='p-5 sm:p-8 md:p-10 justify-center justify-items-center grid grid-cols-3 gap-3'>
                         {items.map((item,index)=>{
-                            return <ItemCard key={index} item={item}/>
+                            return <ItemCard 
+                                key={index} 
+                                item={item}
+                                setDeleteDialog={setDeleteDialog}
+                                setDeleteItem={setDeleteItem}
+                            />
                         })}
                     </div> 
                 </div>
@@ -389,6 +425,38 @@ export default function Items() {
                         null
                     )}
                     Continue</Button>
+                    </DialogFooter>
+                </DialogContent>
+                </form>
+            </Dialog>
+            {/* DELETE ITEM  */}
+            <Dialog open={showDeleteDialog} onOpenChange={()=>{setDeleteDialog(false);setDeleteItem(null)}}>
+                <form action="">
+                <DialogContent className='overflow-auto no-scrollbar'>
+                    <DialogHeader>
+                        <DialogTitle className="tracking-normal">Delete Item</DialogTitle>
+                    </DialogHeader>
+                    <div>
+                    <div className="py-2 pb-4">
+                        <div className="space-y-2">
+                           <p className='text-base'>Are you sure you want to delete <i>{deleteItem? deleteItem.name: "Hello"} </i>?</p>
+                        </div>
+                    </div>
+                    </div>
+                    <DialogFooter>
+                    <Button variant="outline" onClick={() => {setDeleteDialog(false); setDeleteItem(null)}}>
+                        Cancel
+                    </Button>
+                    <Button onClick={onDelete} className='bg-red-500 hover:bg-red-600'>
+                    {isLoading ? (
+                        <svg style={{width: "1.5rem", height: "1.5rem" }} className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        ) : (
+                        null
+                    )}
+                    Delete</Button>
                     </DialogFooter>
                 </DialogContent>
                 </form>
