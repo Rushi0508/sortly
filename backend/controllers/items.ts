@@ -53,23 +53,30 @@ export const deleteItem = async(req: Request, res: Response)=>{
 
 export const editItem = async(req: Request, res: Response)=>{
     try{
-        const { name, quantity, costPrice,unit, sellPrice, tags, rmtags} = req.body;
-        const itemId = req.params.itemId;
-        // const item = await Item.findByIdAndUpdate(itemId, { "$set": { "tags": [] }});
-        const item = await Item.findById(itemId)
-        if(!item){
-            throw new Error("Item not found");
-        }
-        await Item.findByIdAndUpdate(itemId, {$pullAll: {tags: rmtags}})
-        await Tag.updateMany({storeId: item?.storeId}, {$pull: {items: itemId}})
-        tags.forEach((e: any) => {
-            const tag = new Tag({name: e, storeId: item.storeId});
-            tag.items?.push(item.id)
-            tag.save();
-            item?.tags?.push(tag);
+        const { storeId,name, quantity, costPrice,unit, sellPrice, tags} = req.body;
+        const itemId = req.body._id;
+        // console.log(tags);
+        
+        // Find items that don't have tags in the provided array
+        const itemsWithoutMatchingTags = await Item.find({
+            tags: { $nin: tags }
         });
+        // Now, you can extract the unique tags from these items
+        const removedTags = [...new Set(itemsWithoutMatchingTags.flatMap(item => item.tags))];
+        // console.log(removedTags);
+        
+        // Add latest Tags to Items aray
+        const item = await Item.findByIdAndUpdate(itemId, { $set: { tags: [] }});
+        await Item.findByIdAndUpdate(itemId, {$addToSet: {tags: tags}})
+
+        // Remove Item Id from removed tags
+        await Tag.updateMany({_id: {$in: removedTags}}, {$pull: {items: itemId}});
+
+        // Add item to newly added tags.
+        await Tag.updateMany({_id: {$in: tags}}, {$addToSet: {items: itemId}})
+
+        //Update other details
         await Item.findByIdAndUpdate(itemId, {name: name, quantity: quantity,unit: unit, costPrice: costPrice, sellPrice: sellPrice, updatedAt: Date.now()})
-        await item.save();
         res.json({status: true});
     }
     catch(error: any){

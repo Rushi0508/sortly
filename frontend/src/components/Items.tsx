@@ -54,6 +54,8 @@ export default function Items() {
     // Delete States
     const [showDeleteDialog, setDeleteDialog] = useState(false);
     const [deleteItem, setDeleteItem] = useState(null);
+    // Edit States
+    const [editItem, setEditItem] = useState(null);
     
     const userId = localStorage.getItem('user_id');
 
@@ -107,31 +109,43 @@ export default function Items() {
         fetchTags(storeId);
     }
       
-    // New Item submit
+    // New OR Edit Item submit
     const onSubmit = async (body) => {
         setIsLoading(true);
         body.tags = itemTags.map((tag)=>(tag.value))
         body.storeId = currentStore._id;
         console.log(body);
-        
-        const {data} = await axios.post(
-            'http://localhost:5000/api/addItem',
-            body
-        );
-
-        if(data.hasOwnProperty("errors")){
-            toast.error(data.errors)
+        if(editItem){
+            const {data} = await axios.put(
+                'http://localhost:5000/api/editItem',
+                body
+            );
+            if(data.hasOwnProperty('errors')){
+                toast.error('Something went wrong! Try Again');
+            }
+            else if(data.hasOwnProperty('status')){
+                toast.success('Item Edited');
+            }
+            setEditItem(null);
         }
         else{
-            toast.success("Item added successfully")
+            const {data} = await axios.post(
+                'http://localhost:5000/api/addItem',
+                body
+            );
+    
+            if(data.hasOwnProperty("errors")){
+                toast.error(data.errors)
+            }
+            else{
+                toast.success("Item added successfully")
+            }
         }
-        reset();
+        reset(initialValues);
         setItemTags([])
         setIsLoading(false);
         setItemDialog(false);
         fetchItems(sort,filterTags,search);
-        fetchStore(userId);
-        fetchStores(userId);
     }
     // Item Deletion
     const onDelete = async ()=>{
@@ -170,13 +184,21 @@ export default function Items() {
         register,
         handleSubmit,
         formState: { errors },
-        reset
+        reset,
     } = useForm();
 
     useEffect(()=>{
         fetchItems(sort,filterTags,search);
         fetchTags(currentStore?._id);
     }, [currentStore,sort,filterTags,search])
+
+    const initialValues = {
+        name: "",
+        quantity: "",
+        costPrice: "",
+        sellPrice: "",
+        unit: ""
+    }
 
     return (
         <Layout>
@@ -189,7 +211,6 @@ export default function Items() {
             </div>
             : (
             <>
-            <Dialog open={showItemDialog} onOpenChange={setItemDialog}>
                 <div className='bg-[#f3f4f6] min-h-[100vh] w-full'>
                     <div className="flex justify-center items-center m-4">
                         <div className="relative w-[30%]">
@@ -203,18 +224,19 @@ export default function Items() {
                         </div>
                     </div>
                     <div className="flex justify-center items-center gap-5">
-                        <DialogTrigger asChild>
+                        {/* <DialogTrigger> */}
                             <button 
                                 type="button"  
                                 className="flex justify-center items-center px-3 py-2 mx-3 text-sm font-medium text-center text-white bg-gray-800 rounded-md hover:bg-gray-900 focus:ring-2 focus:outline-none focus:ring-gray-300"
-                                onSelect={() => {
+                                onClick={() => {
                                     setItemDialog(true)
+                                    setEditItem(null)
                                 }}
                             >
                                 <AiOutlinePlus size={20} className="pr-1"/>
                                 New Item
                             </button>
-                        </DialogTrigger>
+                        {/* </DialogTrigger> */}
                         {/* Sort filter  */}
                         <Menu as="div" className="relative inline-block text-left">
                             <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
@@ -290,7 +312,7 @@ export default function Items() {
                                     <Separator className='mt-1'/>
                                     <div className="py-1">
                                     {tags.map((tag) => (
-                                    <div key={tag._id} className="flex items-center p-1 px-3">
+                                        <div key={tag._id} className="flex items-center p-1 px-3">
                                         <input
                                         id={tag.name}
                                         defaultValue={tag.name}
@@ -315,20 +337,25 @@ export default function Items() {
                     <div className='p-5 sm:p-8 md:p-10 justify-center justify-items-center grid grid-cols-3 gap-3'>
                         {items.map((item,index)=>{
                             return <ItemCard 
-                                key={index} 
+                            key={index} 
                                 item={item}
                                 setDeleteDialog={setDeleteDialog}
                                 setDeleteItem={setDeleteItem}
+                                setItemDialog={setItemDialog}
+                                setEditItem={setEditItem}
+                                reset={reset}
+                                setItemTags={setItemTags}
                             />
                         })}
                     </div> 
                 </div>
                 {/* NEW Item MODAL  */}
 
+            <Dialog open={showItemDialog} onOpenChange={()=>{setItemDialog(false);setItemTags([]);setEditItem(null);reset(initialValues)}}>
                 <form action="" onSubmit={handleSubmit(onSubmit)}>
                 <DialogContent className='overflow-auto h-full no-scrollbar'>
                     <DialogHeader>
-                        <DialogTitle className="tracking-normal">Add Item</DialogTitle>
+                        <DialogTitle className="tracking-normal">{editItem? "Edit": "Add"} Item</DialogTitle>
                     </DialogHeader>
                     <div>
                     <div className="space-y-4 py-2 pb-4">
@@ -410,7 +437,7 @@ export default function Items() {
                     </div>
                     </div>
                     <DialogFooter>
-                    <Button variant="outline" onClick={() => setItemDialog(false)}>
+                    <Button variant="outline" onClick={() => {setItemDialog(false);setItemTags([]);setEditItem(null);reset(initialValues)}}>
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit(onSubmit)}>
@@ -422,7 +449,7 @@ export default function Items() {
                         ) : (
                         null
                     )}
-                    Continue</Button>
+                    {editItem? "Edit": "Create"}</Button>
                     </DialogFooter>
                 </DialogContent>
                 </form>

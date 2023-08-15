@@ -7,6 +7,7 @@ router.route('/api/addItem')
     .post(newItem)
 router.route('/api/deleteItem')
     .post(deleteItem)
+router.route('/api/editItem')
     .put(editItem)
 router.route('/api/fetchItems')
     .post(fetchItems);
