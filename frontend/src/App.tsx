@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard'
 import Plan from './components/Plan'
 import Success from './components/Success'
 import Items from './components/Items'
+import Stock from './components/Stock'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path='/register' element={<Register/>} />
         <Route path='/' element={<Dashboard/>} />
         <Route path='/items' element={<Items/>} />
+        <Route path='/stock' element={<Stock/>} />
         <Route path='/plans' element={<Plan/>} />
         <Route path='/success' element={<Success/>} />
         <Route path='*' element={<Error/>} /> 
