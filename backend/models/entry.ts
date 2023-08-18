@@ -2,24 +2,29 @@ import mongoose from "mongoose";
 import Item from './item'
 
 interface Entry{
+    storeId?: string,
     buyer?: string,
     supplier?: string,
     quantity: Number,
     costPrice: Number,
     sellPrice: Number,
+    costvalue?: Number,
+    sellValue?: Number,
     items: Array<Item>
     profit?: Number,
     type?: string
 }
 
 const entrySchema = new mongoose.Schema<Entry>({
+    storeId: {
+        type: String,
+        required: true
+    },
     buyer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Party'
+        type: String
     },
     supplier: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Party'
+        type: String
     },
     quantity: {
         type: Number,
@@ -32,6 +37,12 @@ const entrySchema = new mongoose.Schema<Entry>({
     sellPrice: {
         type: Number,
         required: true
+    },
+    costvalue: {
+        type: Number
+    },
+    sellValue: {
+        type: Number
     },
     items: [
         {

@@ -5,6 +5,19 @@ import {Menu, Transition } from "@headlessui/react";
 import { useTagStore } from './zustand/useTagStore';
 import axios from 'axios';
 import { useStoreStore } from './zustand/useStoreStore';
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "./ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Label } from "./ui/label"
+import { Input } from "./ui/input"
+import {useForm} from 'react-hook-form'
+import { PartyCombobox } from './PartyCombobox';
+import { toast } from 'react-hot-toast';
 
 const sortOptions = [
     {
@@ -18,6 +31,12 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
+const initialValues = {
+    quantity: "",
+    price: "",
+    party: ""
+}
+
 export default function Stock() {
     //Stock States
     const [stock, setStock] = useState(null);
@@ -27,9 +46,27 @@ export default function Stock() {
     const [sort,setSort] = useState("Recent");
     const [search,setSearch] = useState("");
 
+    // Stock operation states
+    const [operation, setOperation] = useState("");
+    const [stockItem, setStockItem] = useState(null);
+
+    // dialog state
+    const [showStockDialog, setStockDialog] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+
+    // party states
+    const [party,setParty] = useState("");
+
     const currentStore = useStoreStore((state: any)=>state.currentStore);
     const tags = useTagStore((state: any)=>state.tags);
     const fetchTags = useTagStore((state: any)=>state.fetchTags);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm();
 
     // filter Tags handling
     const handleTagChange = (tagId) => {
@@ -50,6 +87,61 @@ export default function Stock() {
             {storeId,filterTags,sort,search}
         )        
         setStock(data.items);
+    }
+
+    const onSubmit = async (body)=>{
+        setIsLoading(true)
+        body.storeId = currentStore._id;
+        if(operation==='In'){
+            body.supplier = party;
+            body.type = 'Buy'
+            body.costPrice = body.price
+            body.sellPrice = stockItem.sellPrice;
+            body.costValue = body.costPrice * body.quantity 
+        }
+        else if(operation==='Out'){
+            body.buyer = party;
+            body.type = 'Sell'
+            body.sellPrice = body.price
+            body.costPrice = stockItem.costPrice
+            body.sellValue = body.sellPrice * body.quantity
+            body.profit = (body.sellPrice - stockItem.costPrice) * body.quantity;
+        }
+        body.item = [stockItem]
+        delete body.price;
+        const {data} = await axios.post(
+            'http://localhost:5000/api/createEntry',
+            body
+        );
+        if(data.hasOwnProperty('errors')){
+            toast.error('Something went wrong! Try again');
+        }
+        else{
+            toast.success(`Stock ${operation} successful`)
+        }
+        setIsLoading(false);
+        fetchStock(sort,filterTags,search);
+        setOperation("");
+        setStockDialog(false);
+        setParty("");
+        setStockItem(null);
+        reset(initialValues);
+    }
+
+    // on out click
+    const handleOut = (i)=>{
+        setOperation("Out");
+        setStockItem(i)
+        setStockDialog(true);
+        reset({price: i.sellPrice})
+    }
+
+    // on in click
+    const handleIn = (i)=>{
+        setOperation("In");
+        setStockItem(i)
+        setStockDialog(true);
+        reset({price: i.costPrice})
     }
 
     useEffect(()=>{
@@ -168,65 +260,150 @@ export default function Stock() {
                             </Transition>
                         </Menu>
                     </div>
-                    {stock.length===0? <p className='text-xl h-screen text-center'>No stock available</p>: 
-                    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" className="p-4">
-                                </th>
-                                <th scope="col" className="px-6 py-3">
-                                    Item name
-                                </th>
-                                <th scope="col" className="px-6 py-3">
-                                    Category
-                                </th>
-                                <th scope="col" className="px-6 py-3">
-                                    Available Stock
-                                </th>
-                                <th scope="col" className="px-6 py-3">
-                                    Price
-                                </th>
-                                <th scope="col" className="px-6 py-3">
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {stock.map((item)=>{
-                                return (
-                                    <tr key={item._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                        <td className="w-4 p-4">
-                                            <div className="flex items-center">
-                                                <input id="checkbox-table-search-1" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                                                <label htmlFor="checkbox-table-search-1" className="sr-only">checkbox</label>
-                                            </div>
-                                        </td>
-                                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            {item.name}
-                                        </th>
-                                        <td className="px-6 py-4">
-                                            {(item.tags).map((tag,index) => {
-                                                if(index===(item.tags).length-1)
-                                                    return <span key={tag._id}>{tag.name}</span>
-                                                else
-                                                    return <span key={tag._id}>{tag.name} </span>
+                    {stock.length===0? <p className='text-xl h-screen text-center'>No stock found</p>: 
+                        <>
+                        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" className="p-4">
+                                    </th>
+                                    <th scope="col" className="px-6 py-3">
+                                        Item name
+                                    </th>
+                                    <th scope="col" className="px-6 py-3">
+                                        Category
+                                    </th>
+                                    <th scope="col" className="px-6 py-3">
+                                        Available Stock
+                                    </th>
+                                    <th scope="col" className="px-6 py-3">
+                                        Price
+                                    </th>
+                                    <th scope="col" className="px-6 py-3">
+                                        Cost value
+                                    </th>
+                                    <th scope="col" className="px-6 py-3">
+                                        Sell value
+                                    </th>
+                                    <th scope="col" className="px-6 py-3">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {stock.map((item)=>{
+                                    return (
+                                        <tr key={item._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                            <td className="w-4 p-4">
+                                                <div className="flex items-center">
+                                                    <input id="checkbox-table-search-1" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                                    <label htmlFor="checkbox-table-search-1" className="sr-only">checkbox</label>
+                                                </div>
+                                            </td>
+                                            <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                {item.name}
+                                            </th>
+                                            <td className="px-6 py-4">
+                                                {(item.tags).map((tag,index) => {
+                                                    if(index===(item.tags).length-1)
+                                                        return <span key={tag._id}>{tag.name}</span>
+                                                    else
+                                                        return <span key={tag._id}>{tag.name} </span>
+                                                })}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {item.quantity} {(item.quantity > 0) ?`${item.unit}s`: item.unit}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                ${item.sellPrice.toLocaleString('en-IN')}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                ${Math.floor(item.costPrice * item.quantity).toLocaleString('en-IN')}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                ${Math.floor(item.sellPrice * item.quantity).toLocaleString('en-IN')}
+                                            </td>
+                                            <td className="flex items-center px-6 py-4 space-x-3">
+                                                <a href="#" onClick={()=>handleIn(item)} className="text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">IN</a>
+                                                <a href="#" onClick={()=>handleOut(item)} className="text-sm font-medium text-red-600 dark:text-red-500 hover:underline">OUT</a>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </table>
+                        <Dialog open={showStockDialog} onOpenChange={()=>{setStockDialog(false);setStockItem(null);reset(initialValues); setParty("")}}>
+                            <form action="" onSubmit={handleSubmit(onSubmit)}>
+                            <DialogContent className='overflow-auto no-scrollbar'>
+                                <DialogHeader>
+                                    <DialogTitle className="tracking-normal">Stock {operation} - {stockItem? stockItem.name: ""}</DialogTitle>
+                                </DialogHeader>
+                                <div>
+                                <div className="space-y-4 py-2 pb-4">
+                                    <div className="mb-2">
+                                        <p className='text-md'>Available Stock: {stockItem? (stockItem.quantity > 0 ? stockItem.quantity + " " + stockItem.unit +"s": stockItem.quantity + " " + stockItem.unit) : ""}</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="quantity" className='text-md font-medium'>Enter Quantity to {operation==="In"? "Add": "Remove"}</Label>
+                                        <Input 
+                                            type="number" id="quantity" 
+                                            {...register("quantity", {
+                                                required: true,
+                                                max: parseInt(`${operation==="Out"? stockItem?stockItem.quantity:0 : 1000 }`)
                                             })}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {item.quantity} {(item.quantity > 0) ?`${item.unit}s`: item.unit}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            ${item.sellPrice}
-                                        </td>
-                                        <td className="flex items-center px-6 py-4 space-x-3">
-                                            <a href="#" className="text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">IN</a>
-                                            <a href="#" className="text-sm font-medium text-red-600 dark:text-red-500 hover:underline">OUT</a>
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
+                                            disabled={isLoading}
+                                        />
+                                        {errors.quantity && errors.quantity.type === "max" && (
+                                            <p className="mt-1 mb-0 text-red-600">
+                                                Removable quantity is not more than {stockItem? stockItem.quantity: 0}
+                                            </p>
+                                        )}
+                                        {errors.quantity && errors.quantity.type === "required" && (
+                                            <p className="mt-1 mb-0 text-red-600">
+                                                Enter qunatity
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="price" className='text-md font-medium'>{operation==="In"? "Cost Price": "Sell Price"}/{stockItem? stockItem.unit: ""}</Label>
+                                        <Input 
+                                            type="number" id="price" 
+                                            {...register("price", {
+                                                required: true,
+                                            })}
+                                            disabled={isLoading}
+                                        />
+                                        {errors.price && errors.price.type === "required" && (
+                                            <p className="mt-1 mb-0 text-red-600">
+                                                Price is required
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <PartyCombobox key={party} party={party} setParty={setParty}/>
+                                    </div>
+                                    
+                                </div>
+                                </div>
+                                <DialogFooter>
+                                <Button variant="outline" onClick={() => {setStockDialog(false);setStockItem(null);reset(initialValues); setParty("")}}>
+                                    Cancel
+                                </Button>
+                                <Button onClick={handleSubmit(onSubmit)}>
+                                {isLoading ? (
+                                    <svg style={{width: "1.5rem", height: "1.5rem" }} className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    ) : (
+                                    null
+                                )}
+                                Submit</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                            </form>
+                        </Dialog>
+                        </>
                     }
                 </div>
             </div>

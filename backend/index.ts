@@ -6,6 +6,7 @@ import userRoutes from './routes/users'
 import storeRoutes from './routes/stores'
 import itemRoutes from './routes/items'
 import tagRoutes from './routes/tags'
+import entryRoutes from './routes/entries'
 import stripeRoutes from './routes/stripe'
 
 const app = express()
@@ -29,6 +30,7 @@ app.use(userRoutes);
 app.use(storeRoutes);
 app.use(itemRoutes)
 app.use(tagRoutes)
+app.use(entryRoutes)
 app.use(stripeRoutes)
 
 // Server Setup
