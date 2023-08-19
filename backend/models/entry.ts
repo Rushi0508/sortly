@@ -67,6 +67,7 @@ const entrySchema = new mongoose.Schema<Entry>({
     },
     paymentStatus: {
         type: String,
+        enum: ['PENDING', 'COMPLETED', 'DEPOSIT'],
         required: true,
     },
     amountPaid: {

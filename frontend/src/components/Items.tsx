@@ -240,7 +240,7 @@ export default function Items() {
                         {/* Sort filter  */}
                         <Menu as="div" className="relative inline-block text-left">
                             <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                                Sort
+                                {sort}
                                 <ChevronDownIcon
                                 className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                                 aria-hidden="true"
@@ -333,7 +333,8 @@ export default function Items() {
                                 </Menu.Items>
                             </Transition>
                         </Menu>
-                    </div>    
+                    </div>
+                    {items.length===0? <p className='mt-5 text-xl h-screen text-center'>No Items found</p>:
                     <div className='p-5 sm:p-8 md:p-10 justify-center justify-items-center grid grid-cols-3 gap-3'>
                         {items.map((item,index)=>{
                             return <ItemCard 
@@ -348,6 +349,7 @@ export default function Items() {
                             />
                         })}
                     </div> 
+                    }
                 </div>
                 {/* NEW Item MODAL  */}
 

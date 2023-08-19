@@ -9,6 +9,7 @@ import Success from './components/Success'
 import Items from './components/Items'
 import Stock from './components/Stock'
 import Entry from './components/Entry'
+import Party from './components/Party'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path='/items' element={<Items/>} />
         <Route path='/stock' element={<Stock/>} />
         <Route path='/entries' element={<Entry/>} />
+        <Route path='/parties' element={<Party/>} />
         <Route path='/plans' element={<Plan/>} />
         <Route path='/success' element={<Success/>} />
         <Route path='*' element={<Error/>} /> 

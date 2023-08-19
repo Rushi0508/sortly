@@ -9,7 +9,7 @@ export const createEntry = async(req:Request, res: Response, next: NextFunction)
        const entry = new Entry(req.body)
        await entry.save();
        const store = await Store.findByIdAndUpdate(req.body.storeId, {$push: {entries: entry}});
-       let stockItem = req.body.item[0];
+       let stockItem = req.body.items[0];
        if(req.body.type==='Buy'){
             let newQunatity = parseInt(stockItem.quantity) + parseInt(req.body.quantity);
             let newCostPrice = ((stockItem.quantity * stockItem.costPrice) + (req.body.quantity * req.body.costPrice))/newQunatity;

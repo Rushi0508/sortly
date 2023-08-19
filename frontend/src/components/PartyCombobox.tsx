@@ -16,31 +16,10 @@ import {
 } from "@/components/ui/popover"
 import { useState } from "react"
 
-const parties = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-]
 
-export function PartyCombobox({setParty,party}) {
+export function PartyCombobox({setParty,party,parties}) {
   const [open, setOpen] = useState(false)
+  const partyOptions = parties.map((p)=>({value: p._id, label: p.name}))
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -51,9 +30,9 @@ export function PartyCombobox({setParty,party}) {
           aria-expanded={open}
           className="w-[100%] justify-between"
         >
-          {party
-            ? parties.find((p) => p.value === party)?.label
-            : "Select Party..."}
+          {party.label===""
+            ? "Select Party (optional)"
+            : party.label}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -62,18 +41,18 @@ export function PartyCombobox({setParty,party}) {
           <CommandInput placeholder="Search Party..." />
           <CommandEmpty>No Party found</CommandEmpty>
           <CommandGroup>
-            {parties.map((p) => (
+            {partyOptions.map((p) => (
               <CommandItem
                 key={p.value}
-                onSelect={(currentValue) => {
-                  setParty(currentValue === party ? "" : currentValue)
+                onSelect={() => {                  
+                  setParty(p)
                   setOpen(false)
                 }}
               >
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
-                    party === p.value ? "opacity-100" : "opacity-0"
+                    party.value === p.value ? "opacity-100" : "opacity-0"
                   )}
                 />
                 {p.label}

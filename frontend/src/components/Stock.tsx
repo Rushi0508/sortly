@@ -55,7 +55,9 @@ export default function Stock() {
     const [isLoading, setIsLoading] = useState(false)
 
     // party states
-    const [party,setParty] = useState("");
+    const [parties, setParties] = useState(null);
+    const initial = {label: "", value: ""}
+    const [party,setParty] = useState(initial);
 
     const currentStore = useStoreStore((state: any)=>state.currentStore);
     const tags = useTagStore((state: any)=>state.tags);
@@ -90,24 +92,43 @@ export default function Stock() {
     }
 
     const onSubmit = async (body)=>{
+        console.log(body);
+        
         setIsLoading(true)
         body.storeId = currentStore._id;
         if(operation==='In'){
-            body.supplier = party;
+            body.supplier = party.value;
             body.type = 'Buy'
             body.costPrice = body.price
             body.sellPrice = stockItem.sellPrice;
-            body.costValue = body.costPrice * body.quantity 
+            body.costValue = body.costPrice * body.quantity
+            if(body.amountPaid === body.costValue){
+                body.paymentStatus = "COMPLETED"
+            }
+            else if(body.amountPaid < body.costValue){
+                body.paymentStatus = "PENDING"
+            }else{
+                body.paymentStatus = "DEPOSIT"
+            }
         }
         else if(operation==='Out'){
-            body.buyer = party;
+            body.buyer = party.value;
             body.type = 'Sell'
             body.sellPrice = body.price
             body.costPrice = stockItem.costPrice
             body.sellValue = body.sellPrice * body.quantity
             body.profit = (body.sellPrice - stockItem.costPrice) * body.quantity;
+            if(body.amountPaid === body.sellValue){
+                body.paymentStatus = "COMPLETED"
+            }
+            else if(body.amountPaid < body.sellValue){
+                body.paymentStatus = "PENDING"
+            }else{
+                body.paymentStatus = "DEPOSIT"
+            }
         }
-        body.item = [stockItem]
+        body.payDate = Date.now();
+        body.items = [stockItem]
         delete body.price;
         const {data} = await axios.post(
             'http://localhost:5000/api/createEntry',
@@ -123,7 +144,7 @@ export default function Stock() {
         fetchStock(sort,filterTags,search);
         setOperation("");
         setStockDialog(false);
-        setParty("");
+        setParty(initial);
         setStockItem(null);
         reset(initialValues);
     }
@@ -144,9 +165,24 @@ export default function Stock() {
         reset({price: i.costPrice})
     }
 
+    // fetch parties
+    const fetchParties = async (sort,type,searchParty)=>{
+        const storeId = currentStore._id;
+        const {data} = await axios.post(
+            'http://localhost:5000/api/fetchParties',
+            {storeId,type,sort,searchParty}
+        );
+        
+        if(data.hasOwnProperty('parties')){
+            setParties(data.parties);
+        }
+        
+    }
+
     useEffect(()=>{
         fetchStock(sort,filterTags,search);
         fetchTags(currentStore?._id);
+        fetchParties("Recent", "All", "");
     }, [currentStore,sort,filterTags,search])
 
     return (
@@ -175,7 +211,7 @@ export default function Stock() {
                         {/* Sort Filter  */}
                         <Menu as="div" className="relative inline-block text-left">
                             <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                                Sort
+                                {sort}
                                 <ChevronDownIcon
                                 className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                                 aria-hidden="true"
@@ -332,7 +368,7 @@ export default function Stock() {
                                 })}
                             </tbody>
                         </table>
-                        <Dialog open={showStockDialog} onOpenChange={()=>{setStockDialog(false);setStockItem(null);reset(initialValues); setParty("")}}>
+                        <Dialog open={showStockDialog} onOpenChange={()=>{setStockDialog(false);setStockItem(null);reset(initialValues); setParty(initial)}}>
                             <form action="" onSubmit={handleSubmit(onSubmit)}>
                             <DialogContent className='overflow-auto no-scrollbar'>
                                 <DialogHeader>
@@ -349,6 +385,7 @@ export default function Stock() {
                                             type="number" id="quantity" 
                                             {...register("quantity", {
                                                 required: true,
+                                                valueAsNumber: true,
                                                 max: parseInt(`${operation==="Out"? stockItem?stockItem.quantity:0 : 1000 }`)
                                             })}
                                             disabled={isLoading}
@@ -380,13 +417,23 @@ export default function Stock() {
                                         )}
                                     </div>
                                     <div className="space-y-2">
-                                        <PartyCombobox key={party} party={party} setParty={setParty}/>
+                                        <PartyCombobox key={party.value} parties={parties} party={party} setParty={setParty}/>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Input 
+                                            type="number" id="amount" 
+                                            placeholder='Amount Paid'
+                                            {...register("amountPaid", {
+                                                valueAsNumber: true
+                                            })}
+                                            disabled={isLoading}
+                                        />
                                     </div>
                                     
                                 </div>
                                 </div>
                                 <DialogFooter>
-                                <Button variant="outline" onClick={() => {setStockDialog(false);setStockItem(null);reset(initialValues); setParty("")}}>
+                                <Button variant="outline" onClick={() => {setStockDialog(false);setStockItem(null);reset(initialValues); setParty(initial)}}>
                                     Cancel
                                 </Button>
                                 <Button onClick={handleSubmit(onSubmit)}>
