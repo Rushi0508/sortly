@@ -12,7 +12,11 @@ interface Entry{
     sellValue?: Number,
     items: Array<Item>
     profit?: Number,
-    type?: string
+    type?: string,
+    createdAt?: Date,
+    paymentStatus?: string,
+    amountPaid?: Number,
+    payDate?: Date
 }
 
 const entrySchema = new mongoose.Schema<Entry>({
@@ -56,6 +60,22 @@ const entrySchema = new mongoose.Schema<Entry>({
     type: {
         type: String,
         required: [true, "A type is required(Buy or Sell)"]
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
+    },
+    paymentStatus: {
+        type: String,
+        required: true,
+    },
+    amountPaid: {
+        type: Number,
+        default: 0
+    },
+    payDate: {
+        type: Date,
+        default: Date.now()
     }
 })
 
