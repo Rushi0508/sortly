@@ -3,26 +3,32 @@ import Item from './item'
 
 interface Entry{
     storeId?: string,
+    invoiceId: string,
     buyer?: string,
     supplier?: string,
     quantity: Number,
     costPrice: Number,
     sellPrice: Number,
-    costvalue?: Number,
+    costValue?: Number,
     sellValue?: Number,
     items: Array<Item>
     profit?: Number,
     type?: string,
-    createdAt?: Date,
+    createdAt?: Number,
     paymentStatus?: string,
     amountPaid?: Number,
-    payDate?: Date
+    payDate?: Number
 }
 
 const entrySchema = new mongoose.Schema<Entry>({
     storeId: {
         type: String,
         required: true
+    },
+    invoiceId: {
+        type: String,
+        required: true,
+        default: "0"
     },
     buyer: {
         type: String
@@ -42,7 +48,7 @@ const entrySchema = new mongoose.Schema<Entry>({
         type: Number,
         required: true
     },
-    costvalue: {
+    costValue: {
         type: Number
     },
     sellValue: {

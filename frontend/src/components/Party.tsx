@@ -22,6 +22,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useStoreStore } from './zustand/useStoreStore';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
+import { Link } from 'react-router-dom';
 
 const sortOptions = [
     {
@@ -73,10 +74,6 @@ export default function Party() {
     // Accordion states
     const [accordion, setAccordion] = useState(null);
 
-    // const handleAccordionClick = (itemId) => {
-    //     setAccordion(itemId === activeItem ? null : itemId);
-    // };
-
     const {
         register,
         handleSubmit,
@@ -86,7 +83,7 @@ export default function Party() {
     } = useForm();
 
     const fetchParties = async (sort,type,searchParty)=>{
-        const storeId = currentStore._id;
+        const storeId = currentStore?._id;
         const {data} = await axios.post(
             'http://localhost:5000/api/fetchParties',
             {storeId,type,sort,searchParty}
@@ -247,7 +244,7 @@ export default function Party() {
                 <Accordion className='m-auto w-[50%]' type="single" collapsible>
                     {parties.map((party)=>{
                         return (
-                            <AccordionItem value={party._id}>
+                            <AccordionItem key={party._id} value={party._id}>
                                 <AccordionTrigger className={accordion === party._id ? 'bg-[#f3f4f6] px-3 rounded-md' : 'px-3'} onClick={()=>setAccordion(party._id)}>{party.name}</AccordionTrigger>
                                 <AccordionContent className='p-3'>
                                     <dl className="w-100 text-gray-900 divide-y divide-gray-200 dark:text-white dark:divide-gray-700">
@@ -259,9 +256,14 @@ export default function Party() {
                                             <dt className="mb-1 text-gray-500 md:text-sm dark:text-gray-400">Email</dt>
                                             <dd className="text-md font-semibold">{!party.email? "rushigandhi14@gmail.com" : "" }</dd>
                                         </div>
-                                        <div className="flex flex-col pt-2">
+                                        <div className="flex flex-col py-2">
                                             <dt className="mb-1 text-gray-500 md:text-sm dark:text-gray-400">Type</dt>
                                             <dd className="text-md font-semibold">{party.type}</dd>
+                                        </div>
+                                        <div className="flex flex-col pt-2">
+                                            <dt className="mb-1 text-gray-500 text-md dark:text-gray-400">
+                                                <Link to={'/entries/party/'+party._id} state={party} className='text-blue-500 hover:underline'>See History</Link>
+                                            </dt>
                                         </div>
                                     </dl>
                                 </AccordionContent>

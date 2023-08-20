@@ -105,7 +105,7 @@ export default function Stock() {
             if(body.amountPaid === body.costValue){
                 body.paymentStatus = "COMPLETED"
             }
-            else if(body.amountPaid < body.costValue){
+            else if(body.amountPaid > body.costValue){
                 body.paymentStatus = "PENDING"
             }else{
                 body.paymentStatus = "DEPOSIT"

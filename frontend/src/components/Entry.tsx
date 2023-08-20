@@ -1,9 +1,294 @@
-import React from 'react'
+import { Fragment, useEffect, useState } from 'react'
+import { ChevronDownIcon } from "lucide-react";
+import Layout from './layouts/Layout'
+import {Menu, Transition } from "@headlessui/react";
+import { CalendarIcon } from "@radix-ui/react-icons"
+import { addDays, subDays ,format } from "date-fns"
+import { DateRange } from "react-day-picker"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { useStoreStore } from './zustand/useStoreStore';
+import axios from 'axios';
 
-export default function Entry() {
+
+const sortOptions = [
+  {
+      name: "Recent",
+  },
+  {
+      name: "Oldest",
+  }
+]
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
+}
+
+
+export default function Entry({
+  className
+}: React.HTMLAttributes<HTMLDivElement>) {
+
+
+  const currentDate = new Date();
+  const [date, setDate] = useState<DateRange>({
+    from: undefined,
+    to: undefined,
+  })
+
+  const [entries, setEntries] = useState(null);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("Recent");
+  const [type,setType] = useState("Sell")
+
+  const currentStore = useStoreStore((state:any)=>state.currentStore);
+
+  const fetchEntries = async(sort,date,search,type)=>{    
+    const storeId = currentStore?._id;
+    const {data} = await axios.post(
+      'http://localhost:5000/api/fetchEntries',
+      {storeId,sort,date,search,type}
+    );
+    if(!data.hasOwnProperty('errors')){
+        setEntries(data.entries);
+    }
+  }
+
+  useEffect(()=>{
+    fetchEntries(sort,date,search,type);
+  }, [currentStore,sort,search,date,type])
+
   return (
-    <div>
-      
-    </div>
+    <Layout>
+      {!entries ?
+        <div className='h-[90vh] bg-[#f3f4f6] flex justify-center items-center'>
+          <svg style={{ width: "2rem", height: "2rem" }} className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+        : (
+          <>
+            <div className='min-h-[100vh] w-full p-8'>
+              <div className="relative overflow-x-auto no-scrollbar">
+                <div className="p-4 flex gap-4 items-center bg-white dark:bg-gray-900">
+                  <label htmlFor="table-search" className="sr-only">Search</label>
+                  <div className="relative mt-1">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                      </svg>
+                    </div>
+                    <input onClick={()=>console.log(date)} value={search} onChange={(e) => { setSearch(e.target.value) }} type="search" id="table-search" className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:outline-none focus:ring-gray-500 focus:border-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search invoice" />
+                  </div>
+                  {/* Sort Filter  */}
+                  <Menu as="div" className="relative inline-block text-left">
+                    <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                      {sort}
+                      <ChevronDownIcon
+                        className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                        aria-hidden="true"
+                      />
+                    </Menu.Button>
+
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="absolute z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div className="py-1">
+                          {sortOptions.map((option) => (
+                            <Menu.Item key={option.name}>
+                              {({ active }) => (
+                                <a
+                                  onClick={() => {
+                                    setSort(option.name)
+                                  }}
+                                  className={classNames(
+                                    option.name === sort ? 'font-medium text-gray-900' : 'text-gray-500',
+                                    active ? 'bg-gray-100' : '',
+                                    'block px-4 py-2 text-sm', 'cursor-pointer'
+                                  )}
+                                >
+                                  {option.name}
+                                </a>
+                              )}
+                            </Menu.Item>
+                          ))}
+                        </div>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
+                  {/* Date Range  */}
+                  <div className={cn("grid gap-2", className)}>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          id="date"
+                          variant={"outline"}
+                          className={cn(
+                            "w-[300px] justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {date?.from ? (
+                            date.to ? (
+                              <>
+                                {format(date.from, "LLL dd, y")} -{" "}
+                                {format(date.to, "LLL dd, y")}
+                              </>
+                            ) : (
+                              format(date.from, "LLL dd, y")
+                            )
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          initialFocus
+                          mode="range"
+                          defaultMonth={date?.from}
+                          selected={date}
+                          onSelect={setDate}
+                          numberOfMonths={2}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+                  <Tabs defaultValue="Sell" className="px-4">
+                    <TabsList className='mb-4'>
+                      <TabsTrigger value="Sell" onClick={()=>setType("Sell")}>Sell Entries</TabsTrigger>
+                      <TabsTrigger value="Buy" onClick={()=>setType("Buy")}>Buy Entries</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                  {entries.length === 0 ? <p className='text-xl h-screen text-center'>No Entries found</p> :
+                  <>
+                  <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                      <tr>
+                        <th scope="col" className="px-6 py-3">
+                          {type==="Sell"? "INVOICE" : "DATE"}
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Items
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                        {type==="Sell"? "Sell Price" : "Cost Price"}
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Quantity
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Amount
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Balance
+                        </th>
+                        {type==="Sell"? (
+                          <th scope="col" className="px-6 py-3">
+                            P/L
+                          </th>
+                        ): null}
+                        <th scope="col" className="px-6 py-3">
+                          Status
+                        </th>
+                        {type==="Sell"? (
+                          <th scope="col" className="px-6 py-3">
+                            Action
+                          </th>
+                        ): null}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {entries.map((entry:any)=>{
+                        return (
+                          <tr key={entry._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                              {type==="Sell"? 
+                                (
+                                  <>
+                                  INV{entry.invoiceId}
+                                  <br /><span className='text-xs'>{format(new Date(entry.createdAt), 'dd/MM/yyyy')}</span>
+                                  </>
+                                ) : 
+                                (
+                                  <span>{format(new Date(entry.createdAt), 'dd/MM/yyyy')}</span>
+                                )
+                              }
+                            </th>
+                            <td className="px-6 py-4">
+                              {(entry.items).map(item => {
+                                return <span key={item._id}>{item.name}</span>
+                              })}
+                            </td>
+                            <td className="px-6 py-4">
+                              {type==="Sell"?entry.sellPrice:entry.costPrice}
+                            </td>
+                            <td className="px-6 py-4">
+                              {entry.quantity}
+                            </td>
+                            <td className="px-6 py-4">
+                              {type==="Sell"?entry.sellValue: entry.costValue}
+                            </td>
+                            <td className="px-6 py-4">
+                              {type==="Sell"? 
+                                (entry.amountPaid > entry.sellValue ? "("+(entry.amountPaid-entry.sellValue)+")" : entry.sellValue-entry.amountPaid)
+                                 :
+                                 (entry.amountPaid >= entry.costValue ? entry.amountPaid-entry.costValue : "("+(entry.costValue-entry.amountPaid)+")")
+                                }
+                            </td>
+                            {type==="Sell"?
+                              <td className="px-6 py-4 font-semibold text-green-400">
+                              {entry.profit>0?"+"+(entry.profit): (entry.profit)}
+                              </td>: null  
+                            }
+                            <td className="px-6 py-4">
+                              <span className={
+                                (entry.paymentStatus==="COMPLETED"?
+                                  "bg-green-100 text-green-800" : 
+                                  (entry.paymentStatus==="PENDING"?
+                                  "bg-red-100 text-red-800":
+                                  "bg-blue-100 text-blue-800"
+                                  )
+                                )
+                                  + " text-xs px-2.5 py-1 rounded"}
+                              >
+                                    {entry.paymentStatus}
+                                  </span>
+                            </td>
+                            {type==="Sell"?
+                              <td className="px-6 py-4 space-x-3">
+                                <a href="#"  className="text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</a>
+                              </td>: null  
+                            }
+                          </tr>
+                        )
+                      })}                        
+                    </tbody>
+                  </table>
+                  </>
+                }
+              </div>
+            </div>
+          </>
+
+        )}
+
+    </Layout>
   )
 }
