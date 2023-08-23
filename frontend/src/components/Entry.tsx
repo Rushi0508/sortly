@@ -60,6 +60,16 @@ export default function Entry({
     }
   }
 
+  const sendInvoice = async(entry,store)=>{
+
+    const {data} = await axios.post(
+      'http://localhost:5000/api/sendinvoice',
+      {entry,store}
+    );
+    console.log(data);
+    
+  }
+
   useEffect(()=>{
     fetchEntries(sort,date,search,type);
   }, [currentStore,sort,search,date,type])
@@ -271,10 +281,13 @@ export default function Entry({
                                     {entry.paymentStatus}
                                   </span>
                             </td>
-                            {type==="Sell"?
-                              <td className="px-6 py-4 space-x-3">
-                                <a href="#"  className="text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</a>
-                              </td>: null  
+                            {type==="Sell"? 
+                                <td className="px-6 py-4 space-x-3">
+                                  {entry.buyer===""? <span>NA</span>:
+                                    <p onClick={()=>sendInvoice(entry,currentStore)} className="cursor-pointer text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</p>
+                                  }  
+                                </td>
+                              : null  
                             }
                           </tr>
                         )

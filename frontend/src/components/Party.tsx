@@ -254,7 +254,7 @@ export default function Party() {
                                         </div>
                                         <div className="flex flex-col py-2">
                                             <dt className="mb-1 text-gray-500 md:text-sm dark:text-gray-400">Email</dt>
-                                            <dd className="text-md font-semibold">{!party.email? "rushigandhi14@gmail.com" : "" }</dd>
+                                            <dd className="text-md font-semibold">{party.email}</dd>
                                         </div>
                                         <div className="flex flex-col py-2">
                                             <dt className="mb-1 text-gray-500 md:text-sm dark:text-gray-400">Type</dt>
