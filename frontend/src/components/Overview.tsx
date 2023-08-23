@@ -1,5 +1,3 @@
-"use client"
-
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 
 const data = [
@@ -53,7 +51,14 @@ const data = [
   },
 ]
 
-export function Overview() {
+export function Overview({monthlyData}) {
+
+  if(monthlyData){
+    monthlyData.forEach((month,index) => {
+      data[index].total = month.totalRevenue
+    });
+  }
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data}>

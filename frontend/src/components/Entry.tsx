@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { ChevronDownIcon } from "lucide-react";
 import Layout from './layouts/Layout'
 import {Menu, Transition } from "@headlessui/react";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover"
 import { useStoreStore } from './zustand/useStoreStore';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 
 const sortOptions = [
@@ -62,12 +63,18 @@ export default function Entry({
 
   const sendInvoice = async(entry,store)=>{
 
+    toast.loading("Sending Invoice")
+
     const {data} = await axios.post(
       'http://localhost:5000/api/sendinvoice',
       {entry,store}
     );
-    console.log(data);
-    
+
+    if(data.hasOwnProperty('errors')){
+      toast.error('Invoice not sent!!')
+    }else{
+      toast.success('Invoice sent successfully')
+    }
   }
 
   useEffect(()=>{
