@@ -6,8 +6,6 @@ import { CalendarIcon } from "@radix-ui/react-icons"
 import { addDays, subDays ,format } from "date-fns"
 import { DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Popover,
@@ -17,6 +15,18 @@ import {
 import { useStoreStore } from './zustand/useStoreStore';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Label } from "./ui/label"
+import { Input } from "./ui/input"
+import {useForm} from 'react-hook-form'
+import { Calendar } from './ui/calendar';
 
 
 const sortOptions = [
@@ -43,12 +53,24 @@ export default function Entry({
     to: undefined,
   })
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const [entries, setEntries] = useState(null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("Recent");
   const [type,setType] = useState("Sell")
 
+  const [selectedEntry,setSelectedEntry] = useState(null);
+  const [showEntryDialog, setEntryDialog] = useState(false);
+
   const currentStore = useStoreStore((state:any)=>state.currentStore);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
   const fetchEntries = async(sort,date,search,type)=>{    
     const storeId = currentStore?._id;
@@ -75,6 +97,37 @@ export default function Entry({
     }else{
       toast.success('Invoice sent successfully')
     }
+  }
+
+  const updateEntry = (entry)=>{
+    setEntryDialog(true);
+    setSelectedEntry(entry);
+    if(entry.type==="Sell"){
+      reset({value: entry.sellValue})
+    }else{
+      reset({value: entry.costValue})
+    }
+  }
+
+  const onSubmit = async (body)=>{
+    setIsLoading(true);
+    body.entry = selectedEntry;
+    const {data} = await axios.post(
+      'http://localhost:5000/api/updateEntry',
+      body
+    );
+    
+    if(data.hasOwnProperty('errors')){
+      toast.error("Something went wrong");
+    }
+    else{
+      toast.success("Entry updated successfully");
+    }
+    fetchEntries(sort,date,search,type);
+    setEntryDialog(false);
+    setSelectedEntry(null);
+    reset({value: ""})
+    setIsLoading(false);
   }
 
   useEffect(()=>{
@@ -224,11 +277,9 @@ export default function Entry({
                         <th scope="col" className="px-6 py-3">
                           Status
                         </th>
-                        {type==="Sell"? (
-                          <th scope="col" className="px-6 py-3">
-                            Action
-                          </th>
-                        ): null}
+                        <th scope="col" className="px-6 py-3">
+                          Action
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -291,16 +342,81 @@ export default function Entry({
                             {type==="Sell"? 
                                 <td className="px-6 py-4 space-x-3">
                                   {entry.buyer===""? <span>NA</span>:
-                                    <p onClick={()=>sendInvoice(entry,currentStore)} className="cursor-pointer text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</p>
+                                    <div>
+                                      <p onClick={()=>sendInvoice(entry,currentStore)} className="cursor-pointer text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</p>
+                                      <p onClick={()=>updateEntry(entry)} className="cursor-pointer text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">Update Entry</p>
+                                    </div>
                                   }  
                                 </td>
-                              : null  
+                              : <td className="px-6 py-4 space-x-3"><p onClick={()=>updateEntry(entry)} className="cursor-pointer text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">Update Entry</p></td>
                             }
                           </tr>
                         )
                       })}                        
                     </tbody>
                   </table>
+                  <Dialog open={showEntryDialog} onOpenChange={()=>{setEntryDialog(false);setSelectedEntry(null); reset({value: ""})}}>
+                      <form action="" onSubmit={handleSubmit(onSubmit)}>
+                      <DialogContent className='overflow-auto no-scrollbar'>
+                          <DialogHeader>
+                              <DialogTitle className="tracking-normal">Update Entry - INV{selectedEntry?.invoiceId}</DialogTitle>
+                          </DialogHeader>
+                          <div>
+                          <div className="space-y-4 py-2 pb-4">
+                              <div className="space-y-2">
+                                  <Label htmlFor="value" className='text-md font-medium'>Total Amount</Label>
+                                  <Input 
+                                      type="number" id="value" 
+                                      {...register("value", {
+                                          required: true,
+                                          valueAsNumber: true,
+                                      })}
+                                      disabled={isLoading}
+                                  />
+                                  {errors.value && errors.value.type === "required" && (
+                                      <p className="mt-1 mb-0 text-red-600">
+                                          Amount required
+                                      </p>
+                                  )}
+                              </div>
+                              <div className="space-y-2">
+                                  <Label htmlFor="amount" className='text-md font-medium'>Amount Paid</Label>
+                                  <Input 
+                                      type="number" id="amount" 
+                                      placeholder='Amount Paid'
+                                      {...register("amountPaid", {
+                                          valueAsNumber: true,
+                                          required: true
+                                      })}
+                                      disabled={isLoading}
+                                  />
+                                  {errors.amountPaid && errors.amountPaid.type === "required" && (
+                                      <p className="mt-1 mb-0 text-red-600">
+                                          Amount required
+                                      </p>
+                                  )}
+                              </div>
+                              
+                          </div>
+                          </div>
+                          <DialogFooter>
+                          <Button variant="outline" onClick={() => {setEntryDialog(false);setSelectedEntry(null);reset({value: ""})}}>
+                              Cancel
+                          </Button>
+                          <Button onClick={handleSubmit(onSubmit)}>
+                          {isLoading ? (
+                              <svg style={{width: "1.5rem", height: "1.5rem" }} className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              ) : (
+                              null
+                          )}
+                          Update</Button>
+                          </DialogFooter>
+                      </DialogContent>
+                      </form>
+                  </Dialog>
                   </>
                 }
               </div>

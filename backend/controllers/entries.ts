@@ -43,6 +43,38 @@ export const createEntry = async(req:Request, res: Response, next: NextFunction)
     }
 }
 
+export const updateEntry = async (req: Request, res: Response)=>{
+  try{
+    const {entry,value,amountPaid} = req.body;
+    let updatedEntry;
+    if(entry.type==="Sell"){
+      updatedEntry = await Entry.findByIdAndUpdate(entry._id, {sellValue: value, $inc: {amountPaid: amountPaid}}, {new: true});
+      if(updatedEntry?.amountPaid === updatedEntry?.sellValue){
+        await Entry.findByIdAndUpdate(entry._id, {paymentStatus: "COMPLETED"});
+      }
+      else if(updatedEntry?.amountPaid && updatedEntry?.sellValue &&  (updatedEntry.amountPaid < updatedEntry?.sellValue)){
+        await Entry.findByIdAndUpdate(entry._id, {paymentStatus: "PENDING"});
+      }else{
+        await Entry.findByIdAndUpdate(entry._id, {paymentStatus: "DEPOSIT"});
+      }
+    }
+    else if(entry.type==="Buy"){
+      updatedEntry = await Entry.findByIdAndUpdate(entry._id, {costValue: value, $inc: {amountPaid: amountPaid}}, {new: true});
+      if(updatedEntry?.amountPaid === updatedEntry?.costValue){
+        await Entry.findByIdAndUpdate(entry._id, {paymentStatus: "COMPLETED"});
+      }
+      else if(updatedEntry?.amountPaid && updatedEntry?.costValue &&  (updatedEntry.amountPaid < updatedEntry?.costValue)){
+        await Entry.findByIdAndUpdate(entry._id, {paymentStatus: "PENDING"});
+      }else{
+        await Entry.findByIdAndUpdate(entry._id, {paymentStatus: "DEPOSIT"});
+      }
+    }
+    res.json({status: true});
+  }catch(e){
+    res.json({status: false, errors: e});
+  }
+}
+
 export const fetchEntries = async(req:Request, res: Response, next: NextFunction)=>{
     try{
         const {storeId, search,sort,date,type} = req.body;
