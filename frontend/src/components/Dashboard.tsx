@@ -55,7 +55,7 @@ const Dashboard: FC= ({}) => {
     <>
     <Layout>
         <div className='bg-[#f3f4f6] w-full overflow-auto py-5 px-8'>
-            {(!currentStore?<h1>SELECT A STORE</h1> : 
+            {(!currentStore?<h1 className='text-center h-100'>Create or Select a Store</h1> : 
               // Sales Overview 
               <>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

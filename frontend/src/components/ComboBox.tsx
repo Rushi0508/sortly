@@ -44,7 +44,7 @@ export function Combobox() {
   const userId = localStorage.getItem('user_id');
   const token = localStorage.getItem('user_token');
 
-//   const user = useUserStore((state: any)=>state.user)
+  const addUser = useUserStore((state: any)=>state.addUser)
   const stores = useStoreStore((state: any)=>state.stores);
   const addStore = useStoreStore((state: any)=>state.addStore);
   const fetchStore = useStoreStore((state: any)=>state.fetchStore);
@@ -88,6 +88,14 @@ export function Combobox() {
     await axios.get(
         `http://localhost:5000/api/activestore?user=${userId}&store=${storeId}`
     )
+  }
+
+  const handleLogout = async ()=>{
+    setCurrentStore(null);
+    addStore([]);
+    addUser({});
+    localStorage.clear();
+    navigate('/login')
   }
 
   const {
@@ -162,10 +170,7 @@ export function Combobox() {
                                     <PlusCircledIcon className="mr-2 h-5 w-5" /> Create Store
                                 </CommandItem>
                                 <CommandItem
-                                    onSelect={() => {
-                                        localStorage.clear();
-                                        navigate('/login')
-                                    }}
+                                    onSelect={() => handleLogout()}
                                     className=" cursor-pointer"
                                 >
                                     <ExitIcon className="mr-2 h-5 w-5"/> Logout
