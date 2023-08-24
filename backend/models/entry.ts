@@ -14,7 +14,7 @@ interface Entry{
     items: Array<Item>
     profit?: Number,
     type?: string,
-    createdAt?: Number,
+    createdAt?: Date,
     paymentStatus?: string,
     amountPaid?: Number,
     payDate?: Number

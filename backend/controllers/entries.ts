@@ -23,7 +23,7 @@ export const createEntry = async(req:Request, res: Response, next: NextFunction)
                 entry.invoiceId = "001";
             }
         }
-       entry.createdAt = Date.now()
+       entry.createdAt = new Date();
        await entry.save();
        const store = await Store.findByIdAndUpdate(req.body.storeId, {$push: {entries: entry}});
        let stockItem = req.body.items[0];

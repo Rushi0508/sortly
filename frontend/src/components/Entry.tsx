@@ -240,7 +240,7 @@ export default function Entry({
                                 (
                                   <>
                                   INV{entry.invoiceId}
-                                  <br /><span className='text-xs'>{format(new Date(entry.createdAt), 'dd/MM/yyyy')}</span>
+                                  <br /><span className='text-xs'>{format(new Date(entry.createdAt), 'LLL dd, y')}</span>
                                   </>
                                 ) : 
                                 (
