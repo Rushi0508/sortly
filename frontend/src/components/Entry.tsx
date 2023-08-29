@@ -63,6 +63,9 @@ export default function Entry({
   const [selectedEntry,setSelectedEntry] = useState(null);
   const [showEntryDialog, setEntryDialog] = useState(false);
 
+  const [selectedParty, setSelectedParty] = useState(null);
+  const [showPartyDialog, setPartyDialog] = useState(false);
+
   const currentStore = useStoreStore((state:any)=>state.currentStore);
 
   const {
@@ -128,6 +131,17 @@ export default function Entry({
     setSelectedEntry(null);
     reset({value: ""})
     setIsLoading(false);
+  }
+
+  const openParty =async (entry) => {
+      const {data} = await axios.get(
+        `http://localhost:5000/api/fetchParty?id=${entry.buyer}`
+      );
+      console.log(data);
+      
+      setSelectedParty(data.party);
+      setSelectedEntry(entry);
+      setPartyDialog(true);
   }
 
   useEffect(()=>{
@@ -291,7 +305,7 @@ export default function Entry({
                               {type==="Sell"? 
                                 (
                                   <>
-                                  INV{entry.invoiceId}
+                                  <span onClick={entry.buyer!=""?()=>openParty(entry):undefined} className='underline cursor-pointer'>INV{entry.invoiceId}</span>
                                   <br /><span className='text-xs'>{format(new Date(entry.createdAt), 'LLL dd, y')}</span>
                                   </>
                                 ) : 
@@ -414,6 +428,39 @@ export default function Entry({
                               null
                           )}
                           Update</Button>
+                          </DialogFooter>
+                      </DialogContent>
+                      </form>
+                  </Dialog>
+                  {/* party dialog  */}
+                  <Dialog open={showPartyDialog} onOpenChange={()=>{setPartyDialog(false);setSelectedParty(null);setSelectedEntry(null)}}>
+                      <form action="" onSubmit={handleSubmit(onSubmit)}>
+                      <DialogContent className='overflow-auto no-scrollbar'>
+                          <DialogHeader>
+                              <DialogTitle className="tracking-normal">Party Details - INV{selectedEntry?.invoiceId} </DialogTitle>
+                          </DialogHeader>
+                          <div>
+                          <div className="space-y-4 py-2 pb-4">
+                              <div className="space-y-2">
+                                  <div className='flex gap-2'>
+                                    <p className='font-semibold'>Name: </p>
+                                    <p>{selectedParty?.name}</p>
+                                  </div>
+                                  <div className='flex gap-2'>
+                                    <p className='font-semibold'>Email: </p>
+                                    <p>{selectedParty?.email}</p>
+                                  </div>
+                                  <div className='flex gap-2'>
+                                    <p className='font-semibold'>Contact No: </p>
+                                    <p>{selectedParty?.contact}</p>
+                                  </div>
+                              </div>
+                          </div>
+                          </div>
+                          <DialogFooter>
+                          <Button variant="outline" onClick={() => {setPartyDialog(false);setSelectedEntry(null);setSelectedParty(null)}}>
+                              Cancel
+                          </Button>
                           </DialogFooter>
                       </DialogContent>
                       </form>

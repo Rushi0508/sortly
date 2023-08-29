@@ -40,3 +40,9 @@ export const fetchParties = async(req:Request, res: Response, next: NextFunction
     }
     res.json({parties: parties});
 }
+
+export const fetchParty = async(req:Request, res: Response, next: NextFunction)=>{
+    const id = req.query.id;
+    const party = await Party.findById(id);
+    res.json({party: party});
+}
