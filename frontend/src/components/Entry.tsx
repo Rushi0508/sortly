@@ -305,7 +305,7 @@ export default function Entry({
                               {type==="Sell"? 
                                 (
                                   <>
-                                  <span onClick={entry.buyer!=""?()=>openParty(entry):undefined} className='underline cursor-pointer'>INV{entry.invoiceId}</span>
+                                  <span onClick={entry.buyer!=""?()=>openParty(entry):undefined} className={entry.buyer!=""?"underline cursor-pointer":""}>INV{entry.invoiceId}</span>
                                   <br /><span className='text-xs'>{format(new Date(entry.createdAt), 'LLL dd, y')}</span>
                                   </>
                                 ) : 
