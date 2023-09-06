@@ -27,6 +27,7 @@ import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import {useForm} from 'react-hook-form'
 import { Calendar } from './ui/calendar';
+import axiosInstance from './Axios';
 
 
 const sortOptions = [
@@ -77,8 +78,8 @@ export default function Entry({
 
   const fetchEntries = async(sort,date,search,type)=>{    
     const storeId = currentStore?._id;
-    const {data} = await axios.post(
-      'http://localhost:5000/api/fetchEntries',
+    const {data} = await axiosInstance.post(
+      '/api/fetchEntries',
       {storeId,sort,date,search,type}
     );
     if(!data.hasOwnProperty('errors')){
@@ -90,8 +91,8 @@ export default function Entry({
 
     toast.loading("Sending Invoice")
 
-    const {data} = await axios.post(
-      'http://localhost:5000/api/sendinvoice',
+    const {data} = await axiosInstance.post(
+      '/api/sendinvoice',
       {entry,store}
     );
 
@@ -115,8 +116,8 @@ export default function Entry({
   const onSubmit = async (body)=>{
     setIsLoading(true);
     body.entry = selectedEntry;
-    const {data} = await axios.post(
-      'http://localhost:5000/api/updateEntry',
+    const {data} = await axiosInstance.post(
+      '/api/updateEntry',
       body
     );
     
@@ -134,8 +135,8 @@ export default function Entry({
   }
 
   const openParty =async (entry) => {
-      const {data} = await axios.get(
-        `http://localhost:5000/api/fetchParty?id=${entry.buyer}`
+      const {data} = await axiosInstance.get(
+        `/api/fetchParty?id=${entry.buyer}`
       );
       console.log(data);
       

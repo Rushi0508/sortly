@@ -2,6 +2,7 @@ import axios from "axios"
 import Layout from "./layouts/Layout"
 import { useEffect, useState } from "react"
 import { useUserStore } from "./zustand/useUserStore"
+import axiosInstance from "./Axios"
 
 const Plans = ({ }) => {
     const [isLoading_p, setIsLoading_p] = useState(false)
@@ -12,8 +13,8 @@ const Plans = ({ }) => {
     const handlePlan = async (plan,price)=>{
         plan === "PREMIUM" ? setIsLoading_p(true) : setIsLoading_s(true)
         localStorage.setItem('plan', plan);
-        const {data} = await axios.post(
-            'http://localhost:5000/create-checkout-session',
+        const {data} = await axiosInstance.post(
+            '/create-checkout-session',
             {plan,price}
         );
         plan === "PREMIUM" ? setIsLoading_p(false) : setIsLoading_s(false)

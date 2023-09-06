@@ -4,6 +4,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useEffect, useState } from 'react'
 import Otp from './Otp'
+import axiosInstance from './Axios'
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,8 +22,8 @@ const Login = () => {
   const onSubmit = async (body) => {
     setIsLoading(true);
     console.log(body);
-    const {data} = await axios.post(
-      'http://localhost:5000/api/login',
+    const {data} = await axiosInstance.post(
+      '/api/login',
       body
     );
     console.log(data);

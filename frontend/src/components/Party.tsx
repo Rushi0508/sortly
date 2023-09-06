@@ -23,6 +23,7 @@ import { toast } from 'react-hot-toast';
 import { useStoreStore } from './zustand/useStoreStore';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Link } from 'react-router-dom';
+import axiosInstance from './Axios';
 
 const sortOptions = [
     {
@@ -84,8 +85,8 @@ export default function Party() {
 
     const fetchParties = async (sort,type,searchParty)=>{
         const storeId = currentStore?._id;
-        const {data} = await axios.post(
-            'http://localhost:5000/api/fetchParties',
+        const {data} = await axiosInstance.post(
+            '/api/fetchParties',
             {storeId,type,sort,searchParty}
         );
         
@@ -98,8 +99,8 @@ export default function Party() {
     const onSubmit = async (body)=>{
         setIsLoading(true);
         body.storeId = currentStore._id;
-        const {data} = await axios.post(
-            'http://localhost:5000/api/createParty',
+        const {data} = await axiosInstance.post(
+            '/api/createParty',
             body
         )
 

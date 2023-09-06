@@ -33,6 +33,7 @@ import axios from "axios"
 import toast from "react-hot-toast"
 import { useStoreStore } from "./zustand/useStoreStore"
 import { useUserStore } from "./zustand/useUserStore"
+import axiosInstance from "./Axios"
 // import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 
 
@@ -56,8 +57,8 @@ export function Combobox() {
   const onSubmit = async (body) => {
     setIsLoading(true);
     body.userId = userId    
-    const {data} = await axios.post(
-      'http://localhost:5000/api/addStore',
+    const {data} = await axiosInstance.post(
+      '/api/addStore',
       body,
       {
         headers: {
@@ -85,8 +86,8 @@ export function Combobox() {
   }
 
   const handleStoreStatus = async (storeId)=>{
-    await axios.get(
-        `http://localhost:5000/api/activestore?user=${userId}&store=${storeId}`
+    await axiosInstance.get(
+        `/api/activestore?user=${userId}&store=${storeId}`
     )
   }
 

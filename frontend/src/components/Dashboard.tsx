@@ -13,6 +13,7 @@ import {
 import { Overview } from './Overview';
 import axios from 'axios';
 import { RecentSales } from './RecentSales';
+import axiosInstance from './Axios';
 
 const Dashboard: FC= ({}) => {
   const navigate = useNavigate();
@@ -29,8 +30,8 @@ const Dashboard: FC= ({}) => {
 
   const fetchDashboardDetails = async()=>{
     const storeId = currentStore?._id;
-    const {data} = await axios.post(
-      'http://localhost:5000/api/details/dashboard',
+    const {data} = await axiosInstance.post(
+      '/api/details/dashboard',
       {storeId}
     ) 
     console.log(data.perChange);

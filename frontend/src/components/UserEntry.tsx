@@ -4,6 +4,7 @@ import {format} from 'date-fns'
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import axiosInstance from './Axios';
 
 export default function UserEntry() {
 
@@ -15,8 +16,8 @@ export default function UserEntry() {
     const [party,setParty] = useState(null)
 
     const fetchEntries = async (id,type)=>{
-        const {data} = await axios.post(
-            `http://localhost:5000/api/fetchPartyEntries`,
+        const {data} = await axiosInstance.post(
+            `/api/fetchPartyEntries`,
             {partyId: id, type: type}
         )
 

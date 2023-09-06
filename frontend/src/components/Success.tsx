@@ -2,13 +2,14 @@ import axios from "axios";
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useUserStore } from "./zustand/useUserStore";
+import axiosInstance from "./Axios";
 
 export default function Success() {
     const navigate = useNavigate();
 
     const updatePlan = async (userId,plan)=>{
-        await axios.get(
-            `http://localhost:5000/api/updateplan?plan=${plan}&user=${userId}`
+        await axiosInstance.get(
+            `/api/updateplan?plan=${plan}&user=${userId}`
         )
     }
 

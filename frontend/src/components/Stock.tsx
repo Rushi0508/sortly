@@ -18,6 +18,7 @@ import { Input } from "./ui/input"
 import {useForm} from 'react-hook-form'
 import { PartyCombobox } from './PartyCombobox';
 import { toast } from 'react-hot-toast';
+import axiosInstance from './Axios';
 
 const sortOptions = [
     {
@@ -84,8 +85,8 @@ export default function Stock() {
         const storeId = currentStore?._id;
         console.log(storeId);
         
-        let {data} = await axios.post(
-            'http://localhost:5000/api/fetchItems',
+        let {data} = await axiosInstance.post(
+            '/api/fetchItems',
             {storeId,filterTags,sort,search}
         )        
         setStock(data.items);
@@ -130,8 +131,8 @@ export default function Stock() {
         body.payDate = Date.now();
         body.items = [stockItem]
         delete body.price;
-        const {data} = await axios.post(
-            'http://localhost:5000/api/createEntry',
+        const {data} = await axiosInstance.post(
+            '/api/createEntry',
             body
         );
         if(data.hasOwnProperty('errors')){
@@ -168,8 +169,8 @@ export default function Stock() {
     // fetch parties
     const fetchParties = async (sort,type,searchParty)=>{
         const storeId = currentStore._id;
-        const {data} = await axios.post(
-            'http://localhost:5000/api/fetchParties',
+        const {data} = await axiosInstance.post(
+            '/api/fetchParties',
             {storeId,type,sort,searchParty}
         );
         

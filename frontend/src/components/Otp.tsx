@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
 import {useUserStore} from './zustand/useUserStore'
+import axiosInstance from './Axios'
 
 const Otp: FC = () => {
     const [OTP, setOTP] = useState("")
@@ -19,8 +20,8 @@ const Otp: FC = () => {
             toast.error("Enter valid OTP");
         }else{
             const userId = localStorage.getItem('user_id');
-            const {data} = await axios.post(
-                'http://localhost:5000/api/verifyOTP',
+            const {data} = await axiosInstance.post(
+                '/api/verifyOTP',
                 {userId,otp: OTP}
             )
             if(data.hasOwnProperty('errors')){

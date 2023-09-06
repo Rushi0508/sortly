@@ -22,6 +22,7 @@ import toast from 'react-hot-toast';
 import { useStoreStore } from './zustand/useStoreStore';
 import { useTagStore } from './zustand/useTagStore';
 import { Separator } from './ui/separator';
+import axiosInstance from './Axios';
 
 const sortOptions = [
     {
@@ -96,8 +97,8 @@ export default function Items() {
         if(tagsArray.length==0){
             toast.error("Empty Category cannot be added")
         }
-        const {data} = await axios.post(
-            'http://localhost:5000/api/addTag',
+        const {data} = await axiosInstance.post(
+            '/api/addTag',
             {storeId, tagsArray}
         )
         if(data.hasOwnProperty('status')){
@@ -116,8 +117,8 @@ export default function Items() {
         body.storeId = currentStore._id;
         console.log(body);
         if(editItem){
-            const {data} = await axios.put(
-                'http://localhost:5000/api/editItem',
+            const {data} = await axiosInstance.put(
+                '/api/editItem',
                 body
             );
             if(data.hasOwnProperty('errors')){
@@ -129,8 +130,8 @@ export default function Items() {
             setEditItem(null);
         }
         else{
-            const {data} = await axios.post(
-                'http://localhost:5000/api/addItem',
+            const {data} = await axiosInstance.post(
+                '/api/addItem',
                 body
             );
     
@@ -150,8 +151,8 @@ export default function Items() {
     // Item Deletion
     const onDelete = async ()=>{
         setIsLoading(true)
-        const {data} = await axios.post(
-            `http://localhost:5000/api/deleteItem`,
+        const {data} = await axiosInstance.post(
+            `/api/deleteItem`,
             {deleteItem}
         )
 
@@ -173,8 +174,8 @@ export default function Items() {
         const storeId = currentStore?._id;
         console.log(storeId);
         
-        let {data} = await axios.post(
-            'http://localhost:5000/api/fetchItems',
+        let {data} = await axiosInstance.post(
+            '/api/fetchItems',
             {storeId,filterTags,sort,search}
         )        
         setItems(data.items);

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {create} from 'zustand'
+import axiosInstance from '../Axios'
 
 export const useStoreStore = create((set)=>({
     stores: [],
@@ -15,8 +16,8 @@ export const useStoreStore = create((set)=>({
         })
     },
     fetchStore: async (userId)=>{
-        const {data} = await axios.post(
-            'http://localhost:5000/api/fetchStore',
+        const {data} = await axiosInstance.post(
+            '/api/fetchStore',
             {userId}
         )
         set({currentStore : data.data})
@@ -25,8 +26,8 @@ export const useStoreStore = create((set)=>({
     //     set((state)=>({currentStore: state.stores[index]}))
     // },
     fetchStores: async (userId)=>{
-        const {data} = await axios.post(
-            'http://localhost:5000/api/fetchStores',
+        const {data} = await axiosInstance.post(
+            '/api/fetchStores',
             {userId}
         )
         set({stores : data.data})
