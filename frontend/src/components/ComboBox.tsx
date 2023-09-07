@@ -123,10 +123,10 @@ export function Combobox() {
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[200px] justify-between"
+            className="min-w-[200px] justify-between"
             >
                 <LiaStoreAltSolid className='w-5 h-5'/>
-            {currentStore? currentStore.name:"Select Store"}
+            <span className="pl-2">{currentStore? currentStore.name:"Select Store"}</span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
         </PopoverTrigger>

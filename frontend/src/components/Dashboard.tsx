@@ -55,11 +55,11 @@ const Dashboard: FC= ({}) => {
   return(
     <>
     <Layout>
-        <div className='bg-[#f3f4f6] w-full overflow-auto py-5 px-8'>
+        <div className='bg-[#f3f4f6] w-full overflow-auto py-5 px-4 sm:px-8'>
             {(!currentStore?<h1 className='text-center h-100'>Create or Select a Store</h1> : 
               // Sales Overview 
               <>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 min-[550px]:grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
@@ -164,7 +164,7 @@ const Dashboard: FC= ({}) => {
               </div>
               {/* Charts Overview  */}
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 my-5">
-                <Card className="col-span-4">
+                <Card className="col-span-4 md:block hidden">
                   <CardHeader>
                     <CardTitle>Overview</CardTitle>
                   </CardHeader>
@@ -172,7 +172,7 @@ const Dashboard: FC= ({}) => {
                     <Overview monthlyData={monthlyData} />
                   </CardContent>
                 </Card>
-                <Card className="col-span-3">
+                <Card className="col-span-4 lg:col-span-3">
                   <CardHeader>
                     <CardTitle>Recent Sales</CardTitle>
                     <CardDescription>
