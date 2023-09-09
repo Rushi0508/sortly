@@ -161,9 +161,9 @@ export default function Entry({
         null
         : (
           <>
-            <div className='min-h-[100vh] w-full p-8'>
+            <div className='min-h-[100vh] whitespace-nowrap w-[100%] p-2 md:p-8'>
               <div className="relative overflow-x-auto no-scrollbar">
-                <div className="p-4 flex gap-4 items-center bg-white dark:bg-gray-900">
+                <div className="p-4 flex-col flex gap-4 md:flex-row items-center bg-white dark:bg-gray-900">
                   <label htmlFor="table-search" className="sr-only">Search</label>
                   <div className="relative mt-1">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -173,95 +173,99 @@ export default function Entry({
                     </div>
                     <input onClick={()=>console.log(date)} value={search} onChange={(e) => { setSearch(e.target.value) }} type="search" id="table-search" className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:outline-none focus:ring-gray-500 focus:border-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search invoice" />
                   </div>
-                  {/* Sort Filter  */}
-                  <Menu as="div" className="relative inline-block text-left">
-                    <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                      {sort}
-                      <ChevronDownIcon
-                        className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                        aria-hidden="true"
-                      />
-                    </Menu.Button>
-
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <Menu.Items className="absolute z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <div className="py-1">
-                          {sortOptions.map((option) => (
-                            <Menu.Item key={option.name}>
-                              {({ active }) => (
-                                <a
-                                  onClick={() => {
-                                    setSort(option.name)
-                                  }}
-                                  className={classNames(
-                                    option.name === sort ? 'font-medium text-gray-900' : 'text-gray-500',
-                                    active ? 'bg-gray-100' : '',
-                                    'block px-4 py-2 text-sm', 'cursor-pointer'
-                                  )}
-                                >
-                                  {option.name}
-                                </a>
-                              )}
-                            </Menu.Item>
-                          ))}
-                        </div>
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
-                  {/* Date Range  */}
-                  <div className={cn("grid gap-2", className)}>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          id="date"
-                          variant={"outline"}
-                          className={cn(
-                            "w-[300px] justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date?.from ? (
-                            date.to ? (
-                              <>
-                                {format(date.from, "LLL dd, y")} -{" "}
-                                {format(date.to, "LLL dd, y")}
-                              </>
+                  <div className='flex flex-wrap gap-4 justify-center items-center'>
+                    {/* Date Range  */}
+                    <div className={cn("grid gap-2", className)}>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            id="date"
+                            variant={"outline"}
+                            className={cn(
+                              "w-[300px] justify-start text-left font-normal",
+                              !date && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date?.from ? (
+                              date.to ? (
+                                <>
+                                  {format(date.from, "LLL dd, y")} -{" "}
+                                  {format(date.to, "LLL dd, y")}
+                                </>
+                              ) : (
+                                format(date.from, "LLL dd, y")
+                              )
                             ) : (
-                              format(date.from, "LLL dd, y")
-                            )
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          initialFocus
-                          mode="range"
-                          defaultMonth={date?.from}
-                          selected={date}
-                          onSelect={setDate}
-                          numberOfMonths={2}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={date?.from}
+                            selected={date}
+                            onSelect={setDate}
+                            numberOfMonths={1}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                   </div>
                 </div>
+                <div className='flex items-center mb-4'>
                   <Tabs defaultValue="Sell" className="px-4">
-                    <TabsList className='mb-4'>
+                    <TabsList>
                       <TabsTrigger value="Sell" onClick={()=>setType("Sell")}>Sell Entries</TabsTrigger>
                       <TabsTrigger value="Buy" onClick={()=>setType("Buy")}>Buy Entries</TabsTrigger>
                     </TabsList>
                   </Tabs>
+                  {/* Sort Filter  */}
+                  <Menu as="div" className="relative inline-block text-left">
+                      <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                        {sort}
+                        <ChevronDownIcon
+                          className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                          aria-hidden="true"
+                        />
+                      </Menu.Button>
+
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items className="absolute z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+                          <div className="py-1">
+                            {sortOptions.map((option) => (
+                              <Menu.Item key={option.name}>
+                                {({ active }) => (
+                                  <a
+                                    onClick={() => {
+                                      setSort(option.name)
+                                    }}
+                                    className={classNames(
+                                      option.name === sort ? 'font-medium text-gray-900' : 'text-gray-500',
+                                      active ? 'bg-gray-100' : '',
+                                      'block px-4 py-2 text-sm', 'cursor-pointer'
+                                    )}
+                                  >
+                                    {option.name}
+                                  </a>
+                                )}
+                              </Menu.Item>
+                            ))}
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                  </Menu>
+                </div>
                   {entries.length === 0 ? <p className='text-xl h-screen text-center'>No Entries found</p> :
                   <>
                   <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">

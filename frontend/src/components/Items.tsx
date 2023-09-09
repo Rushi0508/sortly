@@ -215,7 +215,7 @@ export default function Items() {
             <>
                 <div className='bg-[#f3f4f6] min-h-[100vh] w-full'>
                     <div className="flex justify-center items-center m-4">
-                        <div className="relative w-[30%]">
+                        <div className="relative max-[450px]:min-w-[300px] min-w-[350px]">
                             <input value={search} onChange={(e)=>{setSearch(e.target.value)}} type="search" id="search" className="block p-2.5 w-full z-20 text-base text-gray-900 bg-gray-50 border border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 rounded-md" placeholder="Search Items..." required/>
                             <button type="submit" className="absolute top-0 right-0 h-full p-2.5 text-sm font-medium text-white bg-gray-800 rounded-r-md border border-gray-700 hover:bg-gray-900">
                                 <svg className="w-7 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -225,11 +225,11 @@ export default function Items() {
                             </button>
                         </div>
                     </div>
-                    <div className="flex justify-center items-center gap-5">
+                    <div className="flex justify-center items-center gap-4">
                         {/* <DialogTrigger> */}
                             <button 
                                 type="button"  
-                                className="flex justify-center items-center px-3 py-2 mx-3 text-sm font-medium text-center text-white bg-gray-800 rounded-md hover:bg-gray-900 focus:ring-2 focus:outline-none focus:ring-gray-300"
+                                className="flex justify-center items-center px-2 py-1.5 sm:mx-3 text-sm font-medium text-center text-white bg-gray-800 rounded-md hover:bg-gray-900 focus:ring-2 focus:outline-none focus:ring-gray-300"
                                 onClick={() => {
                                     setItemDialog(true)
                                     setEditItem(null)
@@ -337,7 +337,7 @@ export default function Items() {
                         </Menu>
                     </div>
                     {items.length===0? <p className='mt-5 text-xl h-screen text-center'>No Items found</p>:
-                    <div className='p-5 sm:p-8 md:p-10 justify-center justify-items-center grid grid-cols-3 gap-3'>
+                    <div className='p-5 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 md:p-8 justify-center justify-items-center grid gap-4 sm:gap-3'>
                         {items.map((item,index)=>{
                             return <ItemCard 
                             key={index} 

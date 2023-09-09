@@ -125,7 +125,7 @@ export default function Party() {
         null : (
         <div>
             <div className="flex justify-center items-center m-4">
-                <div className="relative w-[30%]">
+                <div className="relative max-[450px]:min-w-[300px] min-w-[350px]">
                     <input value={searchParty} onChange={(e)=>{setSearchParty(e.target.value)}} type="search" id="search" className="block p-2.5 w-full z-20 text-base text-gray-900 bg-gray-50 border border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 rounded-md" placeholder="Search Parties..." required/>
                     <button type="submit" className="absolute top-0 right-0 h-full p-2.5 text-sm font-medium text-white bg-gray-800 rounded-r-md border border-gray-700 hover:bg-gray-900">
                         <svg className="w-7 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -139,7 +139,7 @@ export default function Party() {
                 {/* New Button  */}
                 <button 
                     type="button"  
-                    className="flex justify-center items-center px-3 py-2 mx-3 text-sm font-medium text-center text-white bg-gray-800 rounded-md hover:bg-gray-900 focus:ring-2 focus:outline-none focus:ring-gray-300"
+                    className="flex justify-center items-center px-2 py-1.5 sm:mx-3 text-sm font-medium text-center text-white bg-gray-800 rounded-md hover:bg-gray-900 focus:ring-2 focus:outline-none focus:ring-gray-300"
                     onClick={() => {
                         setPartyDialog(true)
                         setValue("type", "Buyer")
@@ -237,7 +237,7 @@ export default function Party() {
             </div>
             <div className="p-5">
             {parties.length===0? <p className='text-xl h-screen text-center'>No Parties found</p>:
-                <Accordion className='m-auto w-[50%]' type="single" collapsible>
+                <Accordion className='m-auto w-[95%] sm:w-[80%] lg:w-[60%]' type="single" collapsible>
                     {parties.map((party)=>{
                         return (
                             <AccordionItem key={party._id} value={party._id}>
