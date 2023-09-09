@@ -198,9 +198,9 @@ export default function Stock() {
             null
             : (
             <>
-            <div className='min-h-[100vh] w-full p-8'>
-                <div className="relative overflow-x-auto no-scrollbar">
-                    <div className="p-4 flex gap-4 items-center bg-white dark:bg-gray-900">
+            <div className='min-h-[100vh] w-[100%] whitespace-nowrap p-2 sm:p-8'>
+                <div className="relative overflow-x-scroll no-scrollbar">
+                    <div className="p-4 flex-col flex gap-4 sm:flex-row items-center bg-white dark:bg-gray-900">
                         <label htmlFor="table-search" className="sr-only">Search</label>
                         <div className="relative mt-1">
                             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -210,93 +210,95 @@ export default function Stock() {
                             </div>
                             <input value={search} onChange={(e)=>{setSearch(e.target.value)}} type="search" id="table-search" className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:outline-none focus:ring-gray-500 focus:border-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search for items"/>
                         </div>
-                        {/* Sort Filter  */}
-                        <Menu as="div" className="relative inline-block text-left">
-                            <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                                {sort}
-                                <ChevronDownIcon
-                                className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                                aria-hidden="true"
-                                />
-                            </Menu.Button>
+                        <div className='flex gap-4 justify-center items-center'>
+                            {/* Sort Filter  */}
+                            <Menu as="div" className="relative inline-block text-left">
+                                <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                                    {sort}
+                                    <ChevronDownIcon
+                                    className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                                    aria-hidden="true"
+                                    />
+                                </Menu.Button>
 
-                            <Transition
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
-                            >
-                                <Menu.Items className="absolute z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                    <div className="py-1">
-                                    {sortOptions.map((option) => (
-                                        <Menu.Item key={option.name}>
-                                        {({ active }) => (
-                                            <a
-                                            onClick={()=>{
-                                                setSort(option.name)
-                                            }}
-                                            className={classNames(
-                                                option.name===sort ? 'font-medium text-gray-900' : 'text-gray-500',
-                                                active ? 'bg-gray-100' : '',
-                                                'block px-4 py-2 text-sm','cursor-pointer'
+                                <Transition
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95"
+                                >
+                                    <Menu.Items className="absolute z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                        <div className="py-1">
+                                        {sortOptions.map((option) => (
+                                            <Menu.Item key={option.name}>
+                                            {({ active }) => (
+                                                <a
+                                                onClick={()=>{
+                                                    setSort(option.name)
+                                                }}
+                                                className={classNames(
+                                                    option.name===sort ? 'font-medium text-gray-900' : 'text-gray-500',
+                                                    active ? 'bg-gray-100' : '',
+                                                    'block px-4 py-2 text-sm','cursor-pointer'
+                                                )}
+                                                >
+                                                {option.name}
+                                                </a>
                                             )}
-                                            >
-                                            {option.name}
-                                            </a>
-                                        )}
-                                        </Menu.Item>
-                                    ))}
-                                    </div>
-                                </Menu.Items>
-                            </Transition>
-                        </Menu>
-                        {/* Category Filter  */}
-                        <Menu as="div" className="relative inline-block text-left">
-                            <Menu.Button className="group inline-flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                                Category
-                                <span className="bg-gray-200 text-gray-700 text-xs font-medium py-0.5 px-1.5 rounded dark:bg-blue-200 dark:text-blue-800 m-1">{filterTags.length}</span>
-                                <ChevronDownIcon
-                                className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                                aria-hidden="true"
-                                />
-                            </Menu.Button>
+                                            </Menu.Item>
+                                        ))}
+                                        </div>
+                                    </Menu.Items>
+                                </Transition>
+                            </Menu>
+                            {/* Category Filter  */}
+                            <Menu as="div" className="relative inline-block text-left">
+                                <Menu.Button className="group inline-flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                                    Category
+                                    <span className="bg-gray-200 text-gray-700 text-xs font-medium py-0.5 px-1.5 rounded dark:bg-blue-200 dark:text-blue-800 m-1">{filterTags.length}</span>
+                                    <ChevronDownIcon
+                                    className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                                    aria-hidden="true"
+                                    />
+                                </Menu.Button>
 
-                            <Transition
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
-                            >
-                                <Menu.Items className="absolute z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                    <div className="py-1">
-                                    {tags.map((tag) => (
-                                        <div key={tag._id} className="flex items-center p-1 px-3">
-                                        <input
-                                        id={tag.name}
-                                        defaultValue={tag.name}
-                                        type="checkbox"
-                                        defaultChecked={(filterTags.includes(tag._id))?true: false}
-                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                        onChange={()=>handleTagChange(tag._id)}
-                                        />
-                                        <label
-                                        htmlFor={tag.name}
-                                        className="ml-3 min-w-0 flex-1 text-gray-500"
-                                        >
-                                        {tag.name}
-                                        </label>
-                                    </div>
-                                    ))}
-                                    </div>
-                                </Menu.Items>
-                            </Transition>
-                        </Menu>
+                                <Transition
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95"
+                                >
+                                    <Menu.Items className="absolute z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                        <div className="py-1">
+                                        {tags.map((tag) => (
+                                            <div key={tag._id} className="flex items-center p-1 px-3">
+                                            <input
+                                            id={tag.name}
+                                            defaultValue={tag.name}
+                                            type="checkbox"
+                                            defaultChecked={(filterTags.includes(tag._id))?true: false}
+                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            onChange={()=>handleTagChange(tag._id)}
+                                            />
+                                            <label
+                                            htmlFor={tag.name}
+                                            className="ml-3 min-w-0 flex-1 text-gray-500"
+                                            >
+                                            {tag.name}
+                                            </label>
+                                        </div>
+                                        ))}
+                                        </div>
+                                    </Menu.Items>
+                                </Transition>
+                            </Menu>
+                        </div>
                     </div>
                     {stock.length===0? <div className='text-xl h-screen text-center'><p>No stock found</p><p>Add items to see Stock</p></div>: 
                         <>

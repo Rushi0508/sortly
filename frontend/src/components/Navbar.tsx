@@ -24,7 +24,7 @@ export const Navbar = () => {
   const userId = localStorage.getItem('user_id');
   const token = localStorage.getItem('user_token');
 
-  const user = useUserStore((state:any)=>state.user)
+  const user = useUserStore((state:any)=>state.user) || {}
   const fetchUser = useUserStore((state:any)=>state.fetchUser)
 
   useEffect(()=>{
