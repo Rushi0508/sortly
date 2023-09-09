@@ -1,13 +1,14 @@
 import express from 'express'
 import {createParty, fetchParties, fetchParty} from '../controllers/parties';
+import { userAuth } from '../middleware';
 
 const router = express.Router();
 
 router.route('/api/createParty')
-    .post(createParty);
+    .post(userAuth,createParty);
 router.route('/api/fetchParties')
-    .post(fetchParties);
+    .post(userAuth,fetchParties);
 router.route('/api/fetchParty')
-    .get(fetchParty);
+    .get(userAuth,fetchParty);
 
 export default router

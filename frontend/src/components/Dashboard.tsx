@@ -14,6 +14,7 @@ import { Overview } from './Overview';
 import axios from 'axios';
 import { RecentSales } from './RecentSales';
 import axiosInstance from './Axios';
+import { tr } from 'date-fns/locale';
 
 const Dashboard: FC= ({}) => {
   const navigate = useNavigate();
@@ -28,12 +29,18 @@ const Dashboard: FC= ({}) => {
   const [change, setChange] = useState(null)
   const [recentSales, setRecentSales] = useState(null);
 
+ 
   const fetchDashboardDetails = async()=>{
     const storeId = currentStore?._id;
     const {data} = await axiosInstance.post(
       '/api/details/dashboard',
       {storeId}
     ) 
+    console.log(data);
+    if(data.login === false){
+      localStorage.clear()
+      navigate('/login')
+    }
     console.log(data.perChange);
     
     

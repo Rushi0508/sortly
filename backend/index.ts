@@ -38,13 +38,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes setup
 app.use(express.json());
 app.use(userRoutes);
-app.use(userAuth, storeRoutes);
-app.use(userAuth, itemRoutes)
-app.use(userAuth, tagRoutes)
-app.use(userAuth, entryRoutes)
-app.use(userAuth, partyRoutes)
-app.use(userAuth, stripeRoutes)
-app.use(userAuth, invoiceRoutes)
+app.use(storeRoutes);
+app.use(itemRoutes)
+app.use(tagRoutes)
+app.use(entryRoutes)
+app.use(partyRoutes)
+app.use(stripeRoutes)
+app.use(invoiceRoutes)
 
 
 // Server Setup

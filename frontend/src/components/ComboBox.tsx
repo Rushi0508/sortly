@@ -110,7 +110,7 @@ export function Combobox() {
         await fetchStores(userId)
         await fetchStore(userId)
     }
-    if(stores.length === 0){
+    if(stores?.length === 0){
         fetchData()
     }
   },[])
@@ -135,7 +135,7 @@ export function Combobox() {
                 <CommandList>
                     <CommandEmpty>No Store found.</CommandEmpty>
                     <CommandGroup>
-                        {stores.map((store,index) => (
+                        {stores?.map((store,index) => (
                         <CommandItem
                             key={store._id}
                             onSelect={() => {                                
