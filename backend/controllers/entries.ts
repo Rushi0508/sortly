@@ -13,15 +13,13 @@ function formatNumberWithLeadingZeros(number:any, length:any) {
 
 export const createEntry = async(req:Request, res: Response, next: NextFunction)=>{
     try{
-        const e = await Entry.findOne({type: "Sell"}, {}).sort({createdAt: -1});
+        const e = await Entry.findOne({storeId: req.body.storeId}).sort({createdAt: -1});
         const entry = new Entry(req.body)
-        if(req.body.type==="Sell"){
-            if(e){
-                const formattedNumber = formatNumberWithLeadingZeros(parseInt(e.invoiceId)+1, 3);
-                entry.invoiceId = formattedNumber;
-            }else{
-                entry.invoiceId = "001";
-            }
+        if(e){
+            const formattedNumber = formatNumberWithLeadingZeros(parseInt(e.entryId)+1, 3);
+            entry.entryId = formattedNumber;
+        }else{
+            entry.entryId = "001";
         }
        entry.createdAt = new Date();
        await entry.save();

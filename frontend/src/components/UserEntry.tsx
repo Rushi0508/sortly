@@ -66,7 +66,7 @@ export default function UserEntry() {
                 Amount
             </th>
             <th scope="col" className="px-6 py-3">
-                Balance
+                Balance($)
             </th>
             {type==="Sell"? (
                 <th scope="col" className="px-6 py-3">
@@ -106,19 +106,19 @@ export default function UserEntry() {
                     })}
                 </td>
                 <td className="px-6 py-4">
-                    {type==="Sell"?entry.sellPrice:entry.costPrice}
+                    ${(type==="Sell"?entry.sellPrice:entry.costPrice).toLocaleString('en-IN')}
                 </td>
                 <td className="px-6 py-4">
                     {entry.quantity}
                 </td>
                 <td className="px-6 py-4">
-                    {type==="Sell"?entry.sellValue: entry.costValue}
+                    ${(type==="Sell"?entry.sellValue: entry.costValue).toLocaleString('en-IN')}
                 </td>
                 <td className="px-6 py-4">
                     {type==="Sell"? 
-                    (entry.amountPaid > entry.sellValue ? "("+(entry.amountPaid-entry.sellValue)+")" : entry.sellValue-entry.amountPaid)
+                    (entry.amountPaid > entry.sellValue ? "("+(entry.amountPaid-entry.sellValue).toLocaleString('en-IN')+")" : entry.sellValue-entry.amountPaid).toLocaleString('en-IN')
                         :
-                        (entry.amountPaid >= entry.costValue ? entry.amountPaid-entry.costValue : "("+(entry.costValue-entry.amountPaid)+")")
+                        (entry.amountPaid >= entry.costValue ? entry.amountPaid-entry.costValue : "("+(entry.costValue-entry.amountPaid).toLocaleString('en-IN')+")").toLocaleString('en-IN')
                     }
                 </td>
                 {type==="Sell"?

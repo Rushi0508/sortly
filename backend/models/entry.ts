@@ -3,7 +3,7 @@ import Item from './item'
 
 interface Entry{
     storeId?: string,
-    invoiceId: string,
+    entryId: string,
     buyer?: string,
     supplier?: string,
     quantity: Number,
@@ -25,7 +25,7 @@ const entrySchema = new mongoose.Schema<Entry>({
         type: String,
         required: true
     },
-    invoiceId: {
+    entryId: {
         type: String,
         required: true,
         default: "0"

@@ -12,7 +12,7 @@ export function RecentSales({recentSales}) {
                         {format(new Date(entry.createdAt),'LLL dd, y' )}
                     </p>
                 </div>
-                <div className="ml-auto font-medium">${entry.sellValue}</div>
+                <div className="ml-auto font-medium">${entry.sellValue.toLocaleString('en-IN')}</div>
             </div>
         )
       })}

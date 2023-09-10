@@ -135,12 +135,21 @@ export default function Entry({
   }
 
   const openParty =async (entry) => {
-      const {data} = await axiosInstance.get(
-        `/api/fetchParty?id=${entry.buyer}`
-      );
-      console.log(data);
-      
-      setSelectedParty(data.party);
+      if(entry.hasOwnProperty('buyer')){
+        if(entry.buyer!=""){
+          const {data} = await axiosInstance.get(
+            `/api/fetchParty?id=${entry.buyer}`
+          );
+          setSelectedParty(data.party);
+        }
+      }else{
+        if(entry.supplier!=""){
+          const {data} = await axiosInstance.get(
+            `/api/fetchParty?id=${entry.supplier}`
+          );
+          setSelectedParty(data.party);
+        }
+      }
       setSelectedEntry(entry);
       setPartyDialog(true);
   }
@@ -272,9 +281,10 @@ export default function Entry({
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                       <tr>
                         <th scope="col" className="px-6 py-3">
-                          {type==="Sell"? "INVOICE" : "DATE"}
+                          {/* {type==="Sell"? "INVOICE" : "DATE"} */}
+                          ENTRY
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        {/* <th scope="col" className="px-6 py-3">
                           Items
                         </th>
                         <th scope="col" className="px-6 py-3">
@@ -282,12 +292,12 @@ export default function Entry({
                         </th>
                         <th scope="col" className="px-6 py-3">
                           Quantity
-                        </th>
+                        </th> */}
                         <th scope="col" className="px-6 py-3">
                           Amount
                         </th>
                         <th scope="col" className="px-6 py-3">
-                          Balance
+                          Balance($)
                         </th>
                         {type==="Sell"? (
                           <th scope="col" className="px-6 py-3">
@@ -307,42 +317,33 @@ export default function Entry({
                         return (
                           <tr key={entry._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                              {type==="Sell"? 
-                                (
-                                  <>
-                                  <span onClick={entry.buyer!=""?()=>openParty(entry):undefined} className={entry.buyer!=""?"underline cursor-pointer":""}>INV{entry.invoiceId}</span>
-                                  <br /><span className='text-xs'>{format(new Date(entry.createdAt), 'LLL dd, y')}</span>
-                                  </>
-                                ) : 
-                                (
-                                  <span>{format(new Date(entry.createdAt), 'dd/MM/yyyy')}</span>
-                                )
-                              }
+                                <span onClick={()=>openParty(entry)} className={"underline cursor-pointer"}>E{entry.entryId}</span>
+                                <br /><span className='text-xs'>{format(new Date(entry.createdAt), 'LLL dd, y')}</span>
                             </th>
-                            <td className="px-6 py-4">
+                            {/* <td className="px-6 py-4">
                               {(entry.items).map(item => {
                                 return <span key={item._id}>{item.name}</span>
                               })}
                             </td>
                             <td className="px-6 py-4">
-                              {type==="Sell"?entry.sellPrice:entry.costPrice}
+                              ${type==="Sell"?entry.sellPrice?.toLocaleString('en-IN'):entry.costPrice?.toLocaleString('en-IN')}
                             </td>
                             <td className="px-6 py-4">
                               {entry.quantity}
-                            </td>
+                            </td> */}
                             <td className="px-6 py-4">
-                              {type==="Sell"?entry.sellValue: entry.costValue}
+                              ${type==="Sell"?entry.sellValue?.toLocaleString('en-IN'): entry.costValue?.toLocaleString('en-IN')}
                             </td>
                             <td className="px-6 py-4">
                               {type==="Sell"? 
-                                (entry.amountPaid > entry.sellValue ? "("+(entry.amountPaid-entry.sellValue)+")" : entry.sellValue-entry.amountPaid)
+                                (entry.amountPaid > entry.sellValue ? "("+(entry.amountPaid-entry.sellValue)?.toLocaleString('en-IN')+")" : entry.sellValue-entry.amountPaid)?.toLocaleString('en-IN')
                                  :
-                                 (entry.amountPaid >= entry.costValue ? entry.amountPaid-entry.costValue : "("+(entry.costValue-entry.amountPaid)+")")
+                                 (entry.amountPaid >= entry.costValue ? entry.amountPaid-entry.costValue : "("+(entry.costValue-entry.amountPaid)?.toLocaleString('en-IN')+")")?.toLocaleString('en-IN')
                                 }
                             </td>
                             {type==="Sell"?
-                              <td className="px-6 py-4 font-semibold text-green-400">
-                              {entry.profit>0?"+"+(entry.profit): (entry.profit)}
+                              <td className={entry.profit<0?'text-red-500': 'text-green-400' + ' px-6 py-4 font-semibold '}>
+                              {entry.profit>0?"+"+(entry.profit)?.toLocaleString('en-IN'): (entry.profit)?.toLocaleString('en-IN')}
                               </td>: null  
                             }
                             <td className="px-6 py-4">
@@ -442,24 +443,43 @@ export default function Entry({
                       <form action="" onSubmit={handleSubmit(onSubmit)}>
                       <DialogContent className='overflow-auto no-scrollbar'>
                           <DialogHeader>
-                              <DialogTitle className="tracking-normal">Party Details - INV{selectedEntry?.invoiceId} </DialogTitle>
+                              <DialogTitle className="tracking-normal">E{selectedEntry?.entryId} - Details </DialogTitle>
                           </DialogHeader>
                           <div>
                           <div className="space-y-4 py-2 pb-4">
-                              <div className="space-y-2">
+                            {
+                              selectedParty? 
+                              <div className="flex flex-wrap items-center gap-3">
                                   <div className='flex gap-2'>
                                     <p className='font-semibold'>Name: </p>
                                     <p>{selectedParty?.name}</p>
                                   </div>
                                   <div className='flex gap-2'>
-                                    <p className='font-semibold'>Email: </p>
-                                    <p>{selectedParty?.email}</p>
-                                  </div>
-                                  <div className='flex gap-2'>
                                     <p className='font-semibold'>Contact No: </p>
                                     <p>{selectedParty?.contact}</p>
                                   </div>
+                                  <div className='flex gap-2'>
+                                    <p className='font-semibold'>Email: </p>
+                                    <p>{selectedParty?.email}</p>
+                                  </div>
+                                  <p onClick={()=>sendInvoice(selectedEntry,currentStore)} className="cursor-pointer font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</p>
                               </div>
+                              :
+                              <p>Party Details not available</p>
+                            }
+                            <p className='text-center font-semibold'>Order Details</p>
+                            {selectedEntry?.items.map((i)=>{
+                              return (
+                                <>
+                                <hr/>
+                                <div className='flex items-center justify-center flex-wrap gap-3'>
+                                  <p><span className='font-semibold'>Item</span>: {i?.name}</p>
+                                  <p><span className='font-semibold'>Price</span>: ${selectedEntry?.sellPrice.toLocaleString('en-IN')}</p>
+                                  <p><span className='font-semibold'>Quantity</span>: {selectedEntry?.quantity}</p>
+                                </div>
+                                </>
+                              )
+                            })}
                           </div>
                           </div>
                           <DialogFooter>

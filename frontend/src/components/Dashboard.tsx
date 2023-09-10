@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from 'react'
 import Layout from './layouts/Layout'
 import { useNavigate } from 'react-router-dom'
 import { useStoreStore } from './zustand/useStoreStore';
+import {TbTriangleFilled, TbTriangleInvertedFilled} from 'react-icons/tb'
 
 import {
   Card,
@@ -14,7 +15,6 @@ import { Overview } from './Overview';
 import axios from 'axios';
 import { RecentSales } from './RecentSales';
 import axiosInstance from './Axios';
-import { tr } from 'date-fns/locale';
 
 const Dashboard: FC= ({}) => {
   const navigate = useNavigate();
@@ -86,9 +86,15 @@ const Dashboard: FC= ({}) => {
                   </svg>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">${revenue}</div>
+                  <div className="text-2xl font-bold">${revenue?.toLocaleString('en-IN')}</div>
                   <p className="text-xs text-muted-foreground">
-                    {change?.revenueChange}% from last month
+                    {
+                      change?.revenueChange < 0 ? 
+                      <div className='flex items-center gap-1'><TbTriangleInvertedFilled className='text-red-500'/>{-Math.round(change?.revenueChange).toFixed(2)}% from last month</div>
+                      :
+                      <div className='flex items-center gap-1'><TbTriangleFilled className='text-green-500'/>{Math.round(change?.revenueChange).toFixed(2)}% from last month</div>
+                    }
+                    
                   </p>
                 </CardContent>
               </Card>
@@ -111,9 +117,14 @@ const Dashboard: FC= ({}) => {
                   </svg>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">${profit}</div>
+                  <div className="text-2xl font-bold">${profit?.toLocaleString('en-IN')}</div>
                   <p className="text-xs text-muted-foreground">
-                  {change?.profitChange}% from last month
+                    {
+                      change?.profitChange < 0 ? 
+                      <div className='flex items-center gap-1'><TbTriangleInvertedFilled className='text-red-500'/>{-Math.round(change?.profitChange).toFixed(2)}% from last month</div>
+                      :
+                      <div className='flex items-center gap-1'><TbTriangleFilled className='text-green-500'/>{Math.round(change?.profitChange).toFixed(2)}% from last month</div>
+                    }
                   </p>
                 </CardContent>
               </Card>
@@ -137,7 +148,12 @@ const Dashboard: FC= ({}) => {
                 <CardContent>
                   <div className="text-2xl font-bold">{sales}</div>
                   <p className="text-xs text-muted-foreground">
-                    {change?.salesChange}% from last month
+                    {
+                      change?.salesChange < 0 ? 
+                      <div className='flex items-center gap-1'><TbTriangleInvertedFilled className='text-red-500'/>{-Math.round(change?.salesChange).toFixed(2)}% from last month</div>
+                      :
+                      <div className='flex items-center gap-1'><TbTriangleFilled className='text-green-500'/>{Math.round(change?.salesChange).toFixed(2)}% from last month</div>
+                    }
                   </p>
                 </CardContent>
               </Card>
@@ -164,7 +180,12 @@ const Dashboard: FC= ({}) => {
                 <CardContent>
                   <div className="text-2xl font-bold">{parties}</div>
                   <p className="text-xs text-muted-foreground">
-                    {change?.partyChange}% from last month 
+                    {
+                      change?.partyChange < 0 ? 
+                      <div className='flex items-center gap-1'><TbTriangleInvertedFilled className='text-red-500'/>{-Math.round(change?.partyChange).toFixed(2)}% from last month</div>
+                      :
+                      <div className='flex items-center gap-1'><TbTriangleFilled className='text-green-500'/>{Math.round(change?.partyChange).toFixed(2)}% from last month</div>
+                    }
                   </p>
                 </CardContent>
               </Card>
