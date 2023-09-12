@@ -106,13 +106,15 @@ export function Combobox() {
   } = useForm();
 
   useEffect(()=>{    
-    const fetchData = async ()=>{
-        await fetchStores(userId)
-        await fetchStore(userId)
-    }
-    if(stores?.length === 0){
-        fetchData()
-    }
+    const fetchData = async () => {
+        if (stores?.length === 0 && token && userId) {
+          console.log("Stores empty fetching...");
+          await fetchStores(userId);
+          await fetchStore(userId);
+        }
+    };
+    
+    fetchData();
   },[])
 
   return (
