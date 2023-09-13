@@ -5,26 +5,31 @@ import User from "./models/user";
 
 export const userAuth = async (req: Request, res: Response, next: NextFunction)=>{
     try{
-        const {userAuthToken} = req.body;
+        const userAuthToken = req.headers.authorization;
         if(userAuthToken){
             jwt.verify(userAuthToken , process.env.JWT_SECRET!, async(err, decodedToken)=>{
                 if(err){
-                    res.json({status: false});
+                    console.log("Token Error "+req.method + " " + req.url);
+                    return res.json({login: false})
                 }
-                const userId = decodedToken.user.id;
-                const user = await User.findById({userId});
+                // @ts-ignore: decodedToken is possibly 'undefined'.
+                const userId = decodedToken.user.id 
+                const user = await User.findById(userId);
                 if(!user){
-                    res.json({status: false});
+                    console.log("No User "+req.method + " " + req.url);
+                    return res.json({login: false})
                 }
                 else{
-                    next();
+                    console.log("Authenticated "+req.method + " " + req.url);
+                    next(); 
                 }
             })
         }
         else{
-            res.json({status: false});
+            console.log("No Token "+req.method + " " + req.url);
+            return res.json({login: false})
         }
     }catch(error: any){
-        res.json({errors: error, status: false});
+        return res.json({login: false})
     }
 }

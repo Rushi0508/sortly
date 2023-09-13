@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
+import Item from "./item";
 
 interface Tag{
     name?: string,
-    itemId?: string,
+    storeId?: string,
+    items?: Array<Item>,
     createdAt?: string
 }
 
@@ -10,10 +12,16 @@ const tagSchema = new mongoose.Schema<Tag>({
     name: {
         type: String
     },
-    itemId: {
+    storeId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Item'
+        ref: 'Store'
     },
+    items: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Item'
+        }
+    ],
     createdAt: {
         type: Date,
         default: Date.now(),

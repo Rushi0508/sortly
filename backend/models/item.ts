@@ -5,11 +5,12 @@ interface Item{
     storeId?: string,
     name: string,
     quantity: Number,
+    unit?: string,
     costPrice: Number,
     sellPrice: Number,
     tags?: Array<Tag>,
-    createdAt?: string,
-    updatedAt?: string
+    createdAt?: Date,
+    updatedAt?: Date
 }
 
 const itemSchema = new mongoose.Schema<Item>({
@@ -24,6 +25,10 @@ const itemSchema = new mongoose.Schema<Item>({
     quantity: {
         type: Number,
         required: [true, "Item quantity is required"]
+    },
+    unit: {
+        type: String,
+        required: true
     },
     costPrice: {
         type: Number,

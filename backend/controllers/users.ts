@@ -13,9 +13,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         // Finding if already exists
         let user = await User.findOne({ email: email });
         if (user) {
-            if (user.verified) {
-                throw new Error("Email already registered");
-            }
+            throw new Error("Email already registered");
         }
 
         const salt = 10;
@@ -45,7 +43,11 @@ export const verifyOTP = async(req: Request, res: Response)=>{
     try{
         let {userId, otp} = req.body;
         if(!userId || !otp){
-            throw new Error("Empty details are not allowed");
+            if(!userId){
+                throw new Error("User not found");
+            }else{
+                throw new Error("Empty details are not allowed");
+            }
         }
         else{
             const records = await UserVerification.find({userId}).sort({createdAt: -1});
@@ -117,6 +119,31 @@ export const login = async(req: Request, res: Response, next: NextFunction)=>{
     }
 }
 
+export const fetchUser = async (req: Request, res: Response)=>{
+    const userId = req.body.userId;    
+
+    const user = await User.findById(userId);
+
+    res.json({data: user});
+}
+
+export const updatePlan = async (req: Request, res: Response)=>{
+    const userId = req.query.user   
+    const plan = req.query.plan as string
+    plan?.toUpperCase()  
+
+    await User.updateOne({_id: userId}, {$set: {plan: plan, planCreatedAt: Date.now()}})
+    res.json({status: true})
+}
+
+export const changeStoreStatus =async (req:Request, res: Response ) => {
+    const storeId = req.query.store;
+    const userId = req.query.user;
+
+    await User.findByIdAndUpdate(userId, {$set: {lastActive: storeId}})
+    res.json({status: true})
+}
+
 const sendVerificationMail = async (user: any, res: any) => {
         try {
             const otp = `${Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000}`;
@@ -141,7 +168,7 @@ const sendVerificationMail = async (user: any, res: any) => {
 
             let transporter = nodemailer.createTransport(config);
             const mailoptions = {
-                from: process.env.AUTH_EMAIL,
+                from: '"Sortly" <sortly@gmail.com>',
                 to: user.email,
                 subject: "Verify your Email",
                 html: `
@@ -173,6 +200,6 @@ const sendVerificationMail = async (user: any, res: any) => {
                 }
             })
         } catch (errors: any) {
-            res.json({ status: false, message: errors.message });
+            res.json({ status: false, mail_errors: errors.message });
         };
 }

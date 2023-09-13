@@ -1,16 +1,24 @@
 {
   "dependencies": {
+    "@types/cors": "^2.8.13",
     "@types/dotenv": "^8.2.0",
     "@types/ejs": "^3.1.2",
+    "@types/html-pdf": "^3.0.0",
     "@types/mailgen": "^2.0.5",
     "@types/node": "^20.4.1",
     "@types/nodemailer": "^6.4.8",
     "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.0",
+    "ejs": "^3.1.9",
     "express": "^4.18.2",
+    "html-pdf": "^3.0.1",
     "jsonwebtoken": "^9.0.1",
     "mongoose": "^7.3.2",
     "nodemailer": "^6.9.3",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "stripe": "^12.17.0"
   },
   "scripts": {
     "start": "nodemon index.ts",

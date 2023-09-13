@@ -8,9 +8,11 @@ import Store from '../models/store'
 
 export const newStore = async(req:Request, res: Response, next: NextFunction)=>{
     try{
-        const userId = req.params.userId;
-        const {name, email, address, phone } = req.body;
-        const user = await User.findById({_id: userId});
+        const {userId, name, email, city, phone } = req.body;
+        if(!userId){
+            throw new Error("User not found");
+        }
+        const user = await User.findById(userId);
         if(!user){
             throw new Error("User not found");
         }
@@ -21,7 +23,7 @@ export const newStore = async(req:Request, res: Response, next: NextFunction)=>{
                 userId: user._id,
                 name: name,
                 email: email,
-                address: address,
+                city: city,
                 phone: phone
             })
             user.stores?.push(store);
@@ -54,15 +56,36 @@ export const deleteStore = async(req: Request, res: Response)=>{
 export const editStore = async(req: Request, res: Response)=>{
     try{
         const storeId = req.params.storeId;
-        const store = await Store.findByIdAndUpdate(storeId, {...req.body});
+        const store = await Store.findByIdAndUpdate(storeId, {...req.body,updatedAt: Date.now()});
         if(!store){
-            throw new Error("Store not found");
+            throw new Error("Store details not updated");
         }
         res.json({status: true});
     }
     catch(error: any){
         res.json({status: false, errors: error});
     }
+}
+
+export const fetchStore = async (req: Request, res: Response)=>{
+    const userId = req.body.userId;
+
+    const user = await User.findById(userId);
+    let store;
+    if(user?.lastActive == "" ){
+        store = await Store.findOne({userId: userId});
+    }else{
+        store = await Store.findById(user?.lastActive);
+    }
+
+    res.json({data: store})
+}
+
+export const fetchStores = async (req: Request, res: Response)=>{
+    const userId = req.body.userId;
+
+    const stores = await Store.find({userId: userId})
+    res.json({data: stores})
 }
 
 const sendStoreMail = async (store: any, user: any, res: any)=>{
@@ -78,7 +101,7 @@ const sendStoreMail = async (store: any, user: any, res: any)=>{
 
         let transporter = nodemailer.createTransport(config);
         const mailoptions = {
-            from: "Sortly",
+            from: '"Sortly" <sortly@gmail.com>',
             to: store.email,
             subject: "Store Created",
             html: `

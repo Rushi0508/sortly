@@ -7,6 +7,7 @@ interface User{
     password: string,
     verified?: boolean,
     stores?: Array<Store>,
+    lastActive?: string,
     plan?: string,
     planCreatedAt?: string,
     planExpiresAt?: string,
@@ -37,6 +38,10 @@ const userSchema = new mongoose.Schema<User>({
             ref: "Store"
         }
     ],
+    lastActive: {
+        type: String,
+        default: ""
+    },
     plan: {
         type: String,
         enum: ['FREE', 'SUPER', 'PREMIUM'],
