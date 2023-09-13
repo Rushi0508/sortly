@@ -19,6 +19,8 @@ import {useForm} from 'react-hook-form'
 import { PartyCombobox } from './PartyCombobox';
 import { toast } from 'react-hot-toast';
 import axiosInstance from './Axios';
+import { AiOutlinePlus } from 'react-icons/ai';
+import BulkEntry from './BulkEntry';
 
 const sortOptions = [
     {
@@ -64,6 +66,31 @@ export default function Stock() {
     const tags = useTagStore((state: any)=>state.tags);
     const fetchTags = useTagStore((state: any)=>state.fetchTags);
 
+    // Bulk Selecting
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [showBulkEntry, setBulkEntry] = useState(false);
+
+    const handleCheckboxChange = (item)=>{
+        setSelectedItems((prevSelectedItems) => {
+            if (prevSelectedItems.includes(item)) {
+              // If the item is already selected, remove it
+              return prevSelectedItems.filter((id) => id !== item);
+            } else {
+              // If the item is not selected, add it
+              return [...prevSelectedItems, item];
+            }
+        });
+    }
+
+    const handleBulkEntry = ()=>{
+        if(selectedItems.length ===0){
+            toast.error("No items are selected");
+        }
+        else{
+            setBulkEntry(true);
+        }
+    }
+
     const {
         register,
         handleSubmit,
@@ -100,8 +127,9 @@ export default function Stock() {
         if(operation==='In'){
             body.supplier = party.value;
             body.type = 'Buy'
-            body.costPrice = body.price
-            body.sellPrice = stockItem.sellPrice;
+            body.costPrice = [body.price]
+            body.sellPrice = [stockItem.sellPrice];
+            body.quantity = [body.quantity]
             body.costValue = body.costPrice * body.quantity
             if(body.amountPaid === body.costValue){
                 body.paymentStatus = "COMPLETED"
@@ -115,8 +143,9 @@ export default function Stock() {
         else if(operation==='Out'){
             body.buyer = party.value;
             body.type = 'Sell'
-            body.sellPrice = body.price
-            body.costPrice = stockItem.costPrice
+            body.sellPrice = [body.price]
+            body.costPrice = [stockItem.costPrice]
+            body.quantity = [body.quantity]
             body.sellValue = body.sellPrice * body.quantity
             body.profit = (body.sellPrice - stockItem.costPrice) * body.quantity;
             if(body.amountPaid === body.sellValue){
@@ -196,7 +225,7 @@ export default function Stock() {
             //     </svg> 
             // </div>
             null
-            : (
+            : ( showBulkEntry ? <BulkEntry fetchStock={fetchStock} setSelectedItems={setSelectedItems} selectedItems={selectedItems} setBulkEntry={setBulkEntry} parties={parties}/>:
             <>
             <div className='min-h-[100vh] w-[100%] whitespace-nowrap p-2 sm:p-8'>
                 <div className="relative overflow-x-scroll no-scrollbar">
@@ -298,6 +327,14 @@ export default function Stock() {
                                     </Menu.Items>
                                 </Transition>
                             </Menu>
+                            <button 
+                                type="button"  
+                                className="flex justify-center items-center px-2 py-1.5 sm:mx-3 text-sm font-medium text-center text-white bg-gray-800 rounded-md hover:bg-gray-900 focus:ring-2 focus:outline-none focus:ring-gray-300"
+                                onClick={handleBulkEntry}
+                            >
+                                <AiOutlinePlus size={20} className="pr-1"/>
+                                Bulk Entry
+                            </button>
                         </div>
                     </div>
                     {stock.length===0? <div className='text-xl h-screen text-center'><p>No stock found</p><p>Add items to see Stock</p></div>: 
@@ -336,7 +373,7 @@ export default function Stock() {
                                         <tr key={item._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                             <td className="w-4 p-4">
                                                 <div className="flex items-center">
-                                                    <input id="checkbox-table-search-1" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                                    <input checked={selectedItems.includes(item)} onChange={()=>handleCheckboxChange(item)} id="checkbox-table-search-1" type="checkbox" className="cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                                                     <label htmlFor="checkbox-table-search-1" className="sr-only">checkbox</label>
                                                 </div>
                                             </td>
@@ -372,6 +409,7 @@ export default function Stock() {
                                 })}
                             </tbody>
                         </table>
+                        {/* Single Entry  */}
                         <Dialog open={showStockDialog} onOpenChange={()=>{setStockDialog(false);setStockItem(null);reset(initialValues); setParty(initial)}}>
                             <form action="" onSubmit={handleSubmit(onSubmit)}>
                             <DialogContent className='overflow-auto no-scrollbar'>

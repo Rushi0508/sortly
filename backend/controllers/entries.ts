@@ -24,15 +24,32 @@ export const createEntry = async(req:Request, res: Response, next: NextFunction)
        entry.createdAt = new Date();
        await entry.save();
        const store = await Store.findByIdAndUpdate(req.body.storeId, {$push: {entries: entry}});
-       let stockItem = req.body.items[0];
-       if(req.body.type==='Buy'){
-            let newQunatity = parseInt(stockItem.quantity) + parseInt(req.body.quantity);
-            let newCostPrice = ((stockItem.quantity * stockItem.costPrice) + (req.body.quantity * req.body.costPrice))/newQunatity;
-            await Item.findByIdAndUpdate(stockItem._id, {costPrice: newCostPrice, quantity: newQunatity });
-       }else{
-            let newQunatity = stockItem.quantity - req.body.quantity;
-            await Item.findByIdAndUpdate(stockItem._id, {quantity: newQunatity });
-       }
+
+       const asyncForEach = async (array:any, callback:any) => {
+        for (let index = 0; index < array.length; index++) {
+          await callback(array[index], index, array);
+        }
+      };
+      
+      (async () => {
+        await asyncForEach(req.body.items, async (stockItem:any, index:any) => {
+          if (req.body.type === 'Buy') {
+            const newQuantity = parseInt(stockItem.quantity) + parseInt(req.body.quantity[index]);
+            const newCostPrice = ((stockItem.quantity * stockItem.costPrice) + (req.body.quantity[index] * req.body.costPrice[index])) / newQuantity;
+            
+            // Use await to wait for the update to complete
+            await Item.findByIdAndUpdate(stockItem._id, { costPrice: newCostPrice, quantity: newQuantity });
+          } else {
+            const newQuantity = stockItem.quantity - req.body.quantity[index];
+            
+            // Use await to wait for the update to complete
+            await Item.findByIdAndUpdate(stockItem._id, { quantity: newQuantity });
+          }
+        });
+      
+        // Continue with code after the loop
+      })();
+      
        res.json({status: true})
     }catch(error: any){
         console.log(error);

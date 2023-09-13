@@ -5,7 +5,7 @@ import Party from '../models/party'
 export const createParty = async(req:Request, res: Response, next: NextFunction)=>{
     try{
         const party = new Party(req.body);
-        party.createdAt = Date.now();
+        party.createdAt = new Date();
         party.save();
         res.json({status: true})
     }catch(e){

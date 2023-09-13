@@ -9,8 +9,8 @@ interface Item{
     costPrice: Number,
     sellPrice: Number,
     tags?: Array<Tag>,
-    createdAt?: string,
-    updatedAt?: Number
+    createdAt?: Date,
+    updatedAt?: Date
 }
 
 const itemSchema = new mongoose.Schema<Item>({

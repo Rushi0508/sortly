@@ -23,6 +23,7 @@ export const newItem = async(req:Request, res: Response, next: NextFunction)=>{
             costPrice: costPrice,
             tags: tags
         })
+        item.createdAt = new Date();
         tags.forEach(async(tagId: any) => {
             await Tag.findByIdAndUpdate(tagId, {$push: {items: item.id}});
         });

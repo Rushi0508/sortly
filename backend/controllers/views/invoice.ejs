@@ -379,7 +379,7 @@
         <table class="meta">
             <tr>
                 <th><span >Invoice #</span></th>
-                <td><span >INV<%= entry.invoiceId %></span></td>
+                <td><span >E<%= entry.entryId %></span></td>
             </tr>
             <tr>
                 <th><span >Date</span></th>
@@ -400,12 +400,12 @@
                 </tr>
             </thead>
             <tbody>
-                <% (entry.items).forEach(item => { %>
+                <% (entry.items).forEach((item,i) => { %>
                     <tr>
                         <td><span><%= item.name %></span></td>
-                        <td><span >$</span><span><%= entry.sellPrice %></span></td>
-                        <td><span><%= entry.quantity %></span></td>
-                        <td><span >$</span><span><%= entry.sellValue %></span></td>
+                        <td><span >$</span><span><%= entry.sellPrice[i] %></span></td>
+                        <td><span><%= entry.quantity[i] %></span></td>
+                        <td><span >$</span><span><%= entry.sellPrice[i] * entry.quantity[i] %></span></td>
                     </tr>
                 <% })%>
             </tbody>

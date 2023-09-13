@@ -6,7 +6,7 @@ interface Party{
     contact: string,
     email: string
     type: string,
-    createdAt?: Number
+    createdAt?: Date
 }
 
 const partySchema = new mongoose.Schema<Party>({

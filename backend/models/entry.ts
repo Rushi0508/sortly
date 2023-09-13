@@ -6,9 +6,9 @@ interface Entry{
     entryId: string,
     buyer?: string,
     supplier?: string,
-    quantity: Number,
-    costPrice: Number,
-    sellPrice: Number,
+    quantity: Array<Number>,
+    costPrice: Array<Number>,
+    sellPrice: Array<Number>,
     costValue?: Number,
     sellValue?: Number,
     items: Array<Item>
@@ -36,18 +36,24 @@ const entrySchema = new mongoose.Schema<Entry>({
     supplier: {
         type: String
     },
-    quantity: {
-        type: Number,
-        required: [true, "Quantity is required"]
-    },
-    costPrice: {
-        type: Number,
-        required: true
-    },
-    sellPrice: {
-        type: Number,
-        required: true
-    },
+    quantity: [
+        {
+            type: Number,
+            required: [true, "Quantity is required"]
+        }
+    ],
+    costPrice: [
+        {
+            type: Number,
+            required: true
+        }
+    ],
+    sellPrice: [
+        {
+            type: Number,
+            required: true
+        }
+    ],
     costValue: {
         type: Number
     },

@@ -364,7 +364,7 @@ export default function Entry({
                                 <td className="px-6 py-4 space-x-3">
                                   {entry.buyer===""? <span>NA</span>:
                                     <div>
-                                      <p onClick={()=>sendInvoice(entry,currentStore)} className="cursor-pointer text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</p>
+                                      {/* <p onClick={()=>sendInvoice(entry,currentStore)} className="cursor-pointer text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</p> */}
                                       <p onClick={()=>updateEntry(entry)} className="cursor-pointer text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline">Update Entry</p>
                                     </div>
                                   }  
@@ -468,14 +468,14 @@ export default function Entry({
                               <p>Party Details not available</p>
                             }
                             <p className='text-center font-semibold'>Order Details</p>
-                            {selectedEntry?.items.map((i)=>{
+                            {selectedEntry?.items.map((i,index)=>{
                               return (
                                 <>
                                 <hr/>
                                 <div className='flex items-center justify-center flex-wrap gap-3'>
                                   <p><span className='font-semibold'>Item</span>: {i?.name}</p>
-                                  <p><span className='font-semibold'>Price</span>: ${selectedEntry?.sellPrice.toLocaleString('en-IN')}</p>
-                                  <p><span className='font-semibold'>Quantity</span>: {selectedEntry?.quantity}</p>
+                                  <p><span className='font-semibold'>Price</span>: ${selectedEntry?.type==="Buy"?selectedEntry?.costPrice[index].toLocaleString('en-IN'):selectedEntry?.sellPrice[index].toLocaleString('en-IN')}</p>
+                                  <p><span className='font-semibold'>Quantity</span>: {selectedEntry?.quantity[index]}</p>
                                 </div>
                                 </>
                               )
