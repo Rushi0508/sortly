@@ -35,7 +35,7 @@ export default function ItemCard({item,setDeleteDialog,setDeleteItem,setItemDial
                             <span className='text-sm'>Cost Price: </span>
                             <span className={hide==""? "hidden": "text-lg font-bold text-gray-900 dark:text-white"}>***</span>
                             <AiFillEye className={hide==""? "hidden": ""} onClick={()=>setHide("")}/>
-                            <span className={`${hide} text-lg font-bold text-gray-900 dark:text-white`}>${(item.sellPrice).toLocaleString('en-IN')}</span>
+                            <span className={`${hide} text-lg font-bold text-gray-900 dark:text-white`}>${(item.costPrice).toLocaleString('en-IN')}</span>
                             <AiFillEyeInvisible onClick={()=>setHide('hidden')} className={`${hide}`}/>
                         </div>
                         <div className='flex items-center gap-1'>

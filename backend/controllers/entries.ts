@@ -147,9 +147,9 @@ export const fetchPartyEntries = async(req:Request, res: Response, next: NextFun
         const {partyId,type} = req.body;
         let entries;
         if(type==="Buyer"){
-            entries = await Entry.find({buyer: partyId}).populate({path: 'items', select: "_id name"})
+            entries = await Entry.find({buyer: partyId}).populate({path: 'items', select: "_id name"}).sort({createdAt: -1})
         }else{
-            entries = await Entry.find({supplier: partyId}).populate({path: 'items', select: "_id name"})
+            entries = await Entry.find({supplier: partyId}).populate({path: 'items', select: "_id name"}).sort({createdAt: -1})
         }
         res.json({status: true, entries: entries});
     }catch(e){

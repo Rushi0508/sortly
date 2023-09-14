@@ -380,7 +380,7 @@ export default function Entry({
                       <form action="" onSubmit={handleSubmit(onSubmit)}>
                       <DialogContent className='overflow-auto no-scrollbar'>
                           <DialogHeader>
-                              <DialogTitle className="tracking-normal">Update Entry - INV{selectedEntry?.invoiceId}</DialogTitle>
+                              <DialogTitle className="tracking-normal">Update Entry - E{selectedEntry?.entryId}</DialogTitle>
                           </DialogHeader>
                           <div>
                           <div className="space-y-4 py-2 pb-4">
@@ -462,7 +462,8 @@ export default function Entry({
                                     <p className='font-semibold'>Email: </p>
                                     <p>{selectedParty?.email}</p>
                                   </div>
-                                  <p onClick={()=>sendInvoice(selectedEntry,currentStore)} className="cursor-pointer font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</p>
+                                  {selectedParty.type==='Buyer'?<p onClick={()=>sendInvoice(selectedEntry,currentStore)} className="cursor-pointer font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</p>
+                                  : null}
                               </div>
                               :
                               <p>Party Details not available</p>
