@@ -15,9 +15,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "./ui/dialog"
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useStoreStore } from './zustand/useStoreStore';
 import { useTagStore } from './zustand/useTagStore';

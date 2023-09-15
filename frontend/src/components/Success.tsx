@@ -1,7 +1,5 @@
-import axios from "axios";
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { useUserStore } from "./zustand/useUserStore";
 import axiosInstance from "./Axios";
 
 export default function Success() {

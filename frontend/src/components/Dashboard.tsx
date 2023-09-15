@@ -12,7 +12,6 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Overview } from './Overview';
-import axios from 'axios';
 import { RecentSales } from './RecentSales';
 import axiosInstance from './Axios';
 
