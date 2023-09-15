@@ -62,7 +62,7 @@ const Dashboard: FC= ({}) => {
   return(
     <>
     <Layout>
-        <div className='bg-[#f3f4f6] w-full overflow-auto py-5 px-4 sm:px-8'>
+        <div className='bg-[#f3f4f6] flex-1 w-full overflow-auto py-5 px-4 sm:px-8'>
             {(!currentStore?<h1 className='text-center h-100'>Create or Select a Store</h1> : 
               // Sales Overview 
               <>

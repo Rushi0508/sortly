@@ -29,8 +29,8 @@ const Plans = ({ }) => {
     
     return (
         <Layout>
-            <div className="h-[100vh] py-8 bg-[#f3f4f6]">
-                <div className="flex flex-col sm:flex-col lg:flex-row xl:flex-row md:flex-row justify-center items center  container   ">
+            <div className="flex-1 py-8 bg-[#f3f4f6]">
+                <div className="flex flex-col sm:flex-col lg:flex-row xl:flex-row md:flex-row justify-center items center container">
                     <div className="py-12 sm:py-12 md:py-6 lg:py-6 xl:py-6 px-8 w-full md:max-w-min sm:w-full bg-white z-30">
                         <h1 className="text-gray-500 font-semibold text-xl ">Free</h1>
                         <div className="text-center py-4 px-7">

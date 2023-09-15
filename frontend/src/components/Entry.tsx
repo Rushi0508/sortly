@@ -170,7 +170,7 @@ export default function Entry({
         null
         : (
           <>
-            <div className='min-h-[100vh] whitespace-nowrap w-[100%] p-2 md:p-8'>
+            <div className='flex-1 whitespace-nowrap w-[100%] p-2 md:p-8'>
               <div className="relative overflow-x-auto no-scrollbar">
                 <div className="p-4 flex-col flex gap-4 md:flex-row items-center bg-white dark:bg-gray-900">
                   <label htmlFor="table-search" className="sr-only">Search</label>

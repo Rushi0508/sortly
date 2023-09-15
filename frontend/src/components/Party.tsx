@@ -123,7 +123,7 @@ export default function Party() {
     <Layout>
         {!parties? 
         null : (
-        <div>
+        <div className='flex-1'>
             <div className="flex justify-center items-center m-4">
                 <div className="relative max-[450px]:min-w-[300px] min-w-[350px]">
                     <input value={searchParty} onChange={(e)=>{setSearchParty(e.target.value)}} type="search" id="search" className="block p-2.5 w-full z-20 text-base text-gray-900 bg-gray-50 border border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 rounded-md" placeholder="Search Parties..." required/>
