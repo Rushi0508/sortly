@@ -227,7 +227,7 @@ export default function Stock() {
             null
             : ( showBulkEntry ? <BulkEntry fetchStock={fetchStock} setSelectedItems={setSelectedItems} selectedItems={selectedItems} setBulkEntry={setBulkEntry} parties={parties}/>:
             <>
-            <div className='min-h-[100vh] w-[100%] whitespace-nowrap p-2 sm:p-8'>
+            <div className='flex-1 w-[100%] whitespace-nowrap p-2 sm:p-8'>
                 <div className="relative overflow-x-scroll no-scrollbar">
                     <div className="p-4 flex-col flex gap-4 sm:flex-row items-center bg-white dark:bg-gray-900">
                         <label htmlFor="table-search" className="sr-only">Search</label>

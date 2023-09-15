@@ -213,7 +213,7 @@ export default function Items() {
             null
             : (
             <>
-                <div className='bg-[#f3f4f6] min-h-[100vh] w-full'>
+                <div className='bg-[#f3f4f6] flex-1 w-full'>
                     <div className="flex justify-center items-center m-4">
                         <div className="relative max-[450px]:min-w-[300px] min-w-[350px]">
                             <input value={search} onChange={(e)=>{setSearch(e.target.value)}} type="search" id="search" className="block p-2.5 w-full z-20 text-base text-gray-900 bg-gray-50 border border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 rounded-md" placeholder="Search Items..." required/>

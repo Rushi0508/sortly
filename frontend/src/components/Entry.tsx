@@ -170,7 +170,7 @@ export default function Entry({
         null
         : (
           <>
-            <div className='min-h-[100vh] whitespace-nowrap w-[100%] p-2 md:p-8'>
+            <div className='flex-1 whitespace-nowrap w-[100%] p-2 md:p-8'>
               <div className="relative overflow-x-auto no-scrollbar">
                 <div className="p-4 flex-col flex gap-4 md:flex-row items-center bg-white dark:bg-gray-900">
                   <label htmlFor="table-search" className="sr-only">Search</label>
@@ -380,7 +380,7 @@ export default function Entry({
                       <form action="" onSubmit={handleSubmit(onSubmit)}>
                       <DialogContent className='overflow-auto no-scrollbar'>
                           <DialogHeader>
-                              <DialogTitle className="tracking-normal">Update Entry - INV{selectedEntry?.invoiceId}</DialogTitle>
+                              <DialogTitle className="tracking-normal">Update Entry - E{selectedEntry?.entryId}</DialogTitle>
                           </DialogHeader>
                           <div>
                           <div className="space-y-4 py-2 pb-4">
@@ -462,7 +462,8 @@ export default function Entry({
                                     <p className='font-semibold'>Email: </p>
                                     <p>{selectedParty?.email}</p>
                                   </div>
-                                  <p onClick={()=>sendInvoice(selectedEntry,currentStore)} className="cursor-pointer font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</p>
+                                  {selectedParty.type==='Buyer'?<p onClick={()=>sendInvoice(selectedEntry,currentStore)} className="cursor-pointer font-medium text-blue-600 dark:text-blue-500 hover:underline">Send Invoice</p>
+                                  : null}
                               </div>
                               :
                               <p>Party Details not available</p>
