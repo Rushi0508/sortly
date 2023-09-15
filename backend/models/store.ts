@@ -11,8 +11,8 @@ interface Store{
     phone: BigInt,
     items?: Array<Item>,
     entries?: Array<Entry>,
-    createdAt?: string,
-    updatedAt?: string,
+    createdAt?: Date,
+    updatedAt?: Date,
 }
 
 const storeSchema = new mongoose.Schema<Store>({

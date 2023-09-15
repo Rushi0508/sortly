@@ -17,7 +17,7 @@ interface Entry{
     createdAt?: Date,
     paymentStatus?: string,
     amountPaid?: Number,
-    payDate?: Number
+    payDate?: Date
 }
 
 const entrySchema = new mongoose.Schema<Entry>({

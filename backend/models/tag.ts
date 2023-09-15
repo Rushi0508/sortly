@@ -5,7 +5,7 @@ interface Tag{
     name?: string,
     storeId?: string,
     items?: Array<Item>,
-    createdAt?: string
+    createdAt?: Date
 }
 
 const tagSchema = new mongoose.Schema<Tag>({

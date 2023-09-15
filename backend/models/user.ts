@@ -9,11 +9,11 @@ interface User{
     stores?: Array<Store>,
     lastActive?: string,
     plan?: string,
-    planCreatedAt?: string,
-    planExpiresAt?: string,
+    planCreatedAt?: Date,
+    planExpiresAt?: Date,
     avatar?: string,
-    createdAt?: string,
-    updatedAt?: string
+    createdAt?: Date,
+    updatedAt?: Date
 }
 
 const userSchema = new mongoose.Schema<User>({
