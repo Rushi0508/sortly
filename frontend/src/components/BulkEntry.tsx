@@ -125,7 +125,7 @@ function BulkEntry({selectedItems,setBulkEntry,parties,setSelectedItems,fetchSto
     }, [selectedItems]);
 
   return (
-    <div className='min-h-[100vh] w-[100%] whitespace-nowrap px-2 py-8 sm:p-8'>
+    <div className='flex-1 w-[100%] whitespace-nowrap px-2 py-8 sm:p-8'>
         <div className='flex justify-between items-center font-semibold sm:text-lg mb-2'>
             <span onClick={()=>setBulkEntry(false)} className='cursor-pointer flex items-center text-gray-400'><BiArrowBack className='ml-6'/>Back</span>
             <p className='mr-6'>Bulk Entry - {selectedItems.length} item{selectedItems.length > 1? "s" : ""}</p>
