@@ -21,7 +21,7 @@ app.use(cors());
 
 // Connecting Database
 mongoose.set('strictQuery', false);
-const dbURL ="mongodb://localhost:27017/hyperDB";
+const dbURL = process.env.DB_URL!;
 
 mongoose.connect(dbURL).then(()=>{
     console.log("Mongo Connected");
