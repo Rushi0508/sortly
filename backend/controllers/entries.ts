@@ -99,7 +99,7 @@ export const fetchEntries = async(req:Request, res: Response, next: NextFunction
             const search = req.body.search;
             const regex = new RegExp(search, 'i');
             
-            entries = await Entry.find({storeId: storeId,type: type, invoiceId: { $regex: regex }}).populate({path: 'items',select: '_id name'});
+            entries = await Entry.find({storeId: storeId,type: type, entryId: { $regex: regex }}).populate({path: 'items',select: '_id name'});
         }
         // date terms
         else if(date.hasOwnProperty('from')){
