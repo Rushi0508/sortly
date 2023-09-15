@@ -7,18 +7,14 @@ import { Button } from "@/components/ui/button"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import {useForm} from 'react-hook-form'
-import Select from 'react-select'
-import ItemCard from './ItemCard';
 import {
     Dialog,
     DialogContent,
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "./ui/dialog"
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useStoreStore } from './zustand/useStoreStore';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';

@@ -1,4 +1,3 @@
-import axios from "axios"
 import Layout from "./layouts/Layout"
 import { useEffect, useState } from "react"
 import { useUserStore } from "./zustand/useUserStore"

@@ -1,19 +1,18 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { ChevronDownIcon } from "lucide-react";
 import Layout from './layouts/Layout'
 import {Menu, Transition } from "@headlessui/react";
 import { CalendarIcon } from "@radix-ui/react-icons"
-import { addDays, subDays ,format } from "date-fns"
+import {format } from "date-fns"
 import { DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useStoreStore } from './zustand/useStoreStore';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import {
   Dialog,
@@ -48,7 +47,6 @@ export default function Entry({
 }: React.HTMLAttributes<HTMLDivElement>) {
 
 
-  const currentDate = new Date();
   const [date, setDate] = useState<DateRange>({
     from: undefined,
     to: undefined,

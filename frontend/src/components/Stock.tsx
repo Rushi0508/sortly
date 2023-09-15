@@ -3,7 +3,6 @@ import { ChevronDownIcon } from "lucide-react";
 import Layout from "./layouts/Layout";
 import {Menu, Transition } from "@headlessui/react";
 import { useTagStore } from './zustand/useTagStore';
-import axios from 'axios';
 import { useStoreStore } from './zustand/useStoreStore';
 import {
     Dialog,
