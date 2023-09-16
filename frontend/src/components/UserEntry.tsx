@@ -39,7 +39,10 @@ export default function UserEntry() {
             `/api/fetchPartyEntries`,
             {partyId: id, type: type}
         )
-
+        if(data.login === false){
+            localStorage.clear()
+            navigate('/login')
+        }
         if(data.hasOwnProperty('errors')){
             toast.error('Something went wrong');
             navigate(-1);

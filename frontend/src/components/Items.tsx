@@ -9,6 +9,7 @@ import { Input } from "./ui/input"
 import {useForm} from 'react-hook-form'
 import Select from 'react-select'
 import ItemCard from './ItemCard';
+import { useNavigate } from 'react-router-dom';
 import {
     Dialog,
     DialogContent,
@@ -35,6 +36,9 @@ function classNames(...classes) {
 }
 
 export default function Items() {
+
+    const navigate = useNavigate()
+
     // States for Dialog
     const [showItemDialog, setItemDialog] = useState(false);
     const [showTagDialog, setTagDialog] = useState(false);
@@ -176,6 +180,10 @@ export default function Items() {
             '/api/fetchItems',
             {storeId,filterTags,sort,search}
         )        
+        if(data.login === false){
+            localStorage.clear()
+            navigate('/login')
+        }
         setItems(data.items);
     }
 

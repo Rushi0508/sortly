@@ -4,6 +4,8 @@ import Layout from "./layouts/Layout";
 import {Menu, Transition } from "@headlessui/react";
 import { useTagStore } from './zustand/useTagStore';
 import { useStoreStore } from './zustand/useStoreStore';
+import { useNavigate } from 'react-router-dom';
+
 import {
     Dialog,
     DialogContent,
@@ -40,6 +42,7 @@ const initialValues = {
 }
 
 export default function Stock() {
+    const navigate = useNavigate()
     //Stock States
     const [stock, setStock] = useState(null);
 
@@ -115,6 +118,10 @@ export default function Stock() {
             '/api/fetchItems',
             {storeId,filterTags,sort,search}
         )        
+        if(data.login === false){
+            localStorage.clear()
+            navigate('/login')
+        }
         setStock(data.items);
     }
 
