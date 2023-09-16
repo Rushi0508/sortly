@@ -7,6 +7,7 @@ import {format } from "date-fns"
 import { DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useNavigate } from 'react-router-dom';
 import {
   Popover,
   PopoverContent,
@@ -46,6 +47,7 @@ export default function Entry({
   className
 }: React.HTMLAttributes<HTMLDivElement>) {
 
+  const navigate = useNavigate();
 
   const [date, setDate] = useState<DateRange>({
     from: undefined,
@@ -80,6 +82,10 @@ export default function Entry({
       '/api/fetchEntries',
       {storeId,sort,date,search,type}
     );
+    if(data.login === false){
+      localStorage.clear()
+      navigate('/login')
+    }
     if(!data.hasOwnProperty('errors')){
         setEntries(data.entries);
     }

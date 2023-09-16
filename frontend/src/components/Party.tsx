@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import {useForm} from 'react-hook-form'
+import { useNavigate } from 'react-router-dom';
+
 import {
     Dialog,
     DialogContent,
@@ -51,6 +53,8 @@ const initialValues = {
 }
 
 export default function Party() {
+
+    const navigate = useNavigate()
     // Filter States
     const [searchParty, setSearchParty] = useState("");
     const [sort, setSort] = useState("Recent")
@@ -85,7 +89,10 @@ export default function Party() {
             '/api/fetchParties',
             {storeId,type,sort,searchParty}
         );
-        
+        if(data.login === false){
+            localStorage.clear()
+            navigate('/login')
+        }
         if(data.hasOwnProperty('parties')){
             setParties(data.parties);
         }
