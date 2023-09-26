@@ -2,6 +2,16 @@
 
 Welcome to Sortly, your go-to web app for managing stock and inventory seamlessly. Whether you're a retailer looking to streamline your operations or a business owner in need of efficient stock management, Sortly has you covered.
 
+<div align="center">
+   
+![GitHub issues](https://img.shields.io/github/issues/Rushi0508/sortly)
+![GitHub forks](https://img.shields.io/github/forks/Rushi0508/sortly)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/Rushi0508/sortly)
+![GitHub Repo stars](https://img.shields.io/github/stars/Rushi0508/sortly?style=social)
+
+</div>
+
+
 ## Key Features
 
 - **User Verification**: Get started securely by verifying yourself with OTP.
