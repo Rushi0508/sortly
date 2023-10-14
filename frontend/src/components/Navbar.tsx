@@ -4,6 +4,7 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import {Link, useLocation, useNavigate } from 'react-router-dom'
 import { Combobox } from './ComboBox'
 import { useUserStore } from './zustand/useUserStore'
+import logo from '.././static/assets/Sortly_logo.png'
 
 const navigation = [
   { name: 'Dashboard', href: '/', current: false },
@@ -57,8 +58,8 @@ export const Navbar = () => {
                 <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
                   <div className="flex flex-shrink-0 items-center md:visible invisible">
                     <img
-                      className="h-8 w-auto"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                      className="h-10 w-auto"
+                      src={logo}
                       alt="Your Company"
                     />
                   </div>
@@ -87,7 +88,7 @@ export const Navbar = () => {
               </div>
             </div>
 
-            <Disclosure.Panel className="sm:hidden">
+            <Disclosure.Panel className="md:hidden">
               <div className="space-y-1 px-2 pb-3 pt-2 flex flex-wrap">
                 {navigation.map((item) => (
                   <Link
