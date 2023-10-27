@@ -116,7 +116,7 @@ export default function UserEntry() {
     }, [])
   return (
     <Layout>
-        <div className='p-8'>
+        <div className='flex-1 p-8'>
         {!entries? 
         <div className='bg-[#f3f4f6] flex flex-1 justify-center items-center'>
             <svg style={{width: "2rem", height: "2rem" }} className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
